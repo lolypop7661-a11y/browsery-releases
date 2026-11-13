@@ -42,22 +42,22 @@
   ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // ../browsery-gecko/platform/shims/buffer.js
+  // browsery-gecko/platform/shims/buffer.js
   function toBase64(bytes) {
     let binary = "";
     for (let i = 0; i < bytes.length; i += 32768) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
     return btoa(binary);
   }
   function fromBase64(text) {
-    const clean = String(text).replace(/[^A-Za-z0-9+/=_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
-    const binary = atob(clean);
+    const clean2 = String(text).replace(/[^A-Za-z0-9+/=_-]/g, "").replace(/-/g, "+").replace(/_/g, "/");
+    const binary = atob(clean2);
     const out = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
     return out;
   }
   var encoder, decoder, Buffer2;
   var init_buffer = __esm({
-    "../browsery-gecko/platform/shims/buffer.js"() {
+    "browsery-gecko/platform/shims/buffer.js"() {
       init_globals();
       encoder = new TextEncoder();
       decoder = new TextDecoder();
@@ -126,10 +126,10 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/globals.js
+  // browsery-gecko/platform/shims/globals.js
   var platform, process;
   var init_globals = __esm({
-    "../browsery-gecko/platform/shims/globals.js"() {
+    "browsery-gecko/platform/shims/globals.js"() {
       init_buffer();
       platform = (() => {
         try {
@@ -149,7 +149,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/fs.js
+  // browsery-gecko/platform/shims/fs.js
   var fs_exports = {};
   __export(fs_exports, {
     BUNDLED_ROOT: () => BUNDLED_ROOT,
@@ -237,7 +237,7 @@
   }
   var DATA_ROOT, BUNDLED_ROOT, files, bundled, realDir, pending, enoent, eexist, nameOf, isData, persist, fs_default;
   var init_fs = __esm({
-    "../browsery-gecko/platform/shims/fs.js"() {
+    "browsery-gecko/platform/shims/fs.js"() {
       init_globals();
       init_buffer();
       DATA_ROOT = "/browsery-data";
@@ -259,7 +259,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/path.js
+  // browsery-gecko/platform/shims/path.js
   var path_exports = {};
   __export(path_exports, {
     basename: () => basename,
@@ -275,7 +275,7 @@
   });
   var normalize, sep, join, resolve, dirname, basename, extname, isAbsolute, posix, path_default;
   var init_path = __esm({
-    "../browsery-gecko/platform/shims/path.js"() {
+    "browsery-gecko/platform/shims/path.js"() {
       init_globals();
       normalize = (value) => {
         const absolute = String(value).startsWith("/");
@@ -310,7 +310,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/scrypt.js
+  // browsery-gecko/platform/shims/scrypt.js
   function sha256(data) {
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
     const length = bytes.length;
@@ -472,7 +472,7 @@
   }
   var K;
   var init_scrypt = __esm({
-    "../browsery-gecko/platform/shims/scrypt.js"() {
+    "browsery-gecko/platform/shims/scrypt.js"() {
       init_globals();
       K = new Uint32Array([
         1116352408,
@@ -543,7 +543,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/crypto.js
+  // browsery-gecko/platform/shims/crypto.js
   var crypto_exports = {};
   __export(crypto_exports, {
     default: () => crypto_default,
@@ -575,7 +575,7 @@ ${error?.stack || ""}
   }
   var randomUUID, randomBytes, crypto_default;
   var init_crypto = __esm({
-    "../browsery-gecko/platform/shims/crypto.js"() {
+    "browsery-gecko/platform/shims/crypto.js"() {
       init_globals();
       init_buffer();
       init_scrypt();
@@ -585,9 +585,9 @@ ${error?.stack || ""}
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/local-account.cjs
+  // Browsery-windows-build-1.0.15/electron/local-account.cjs
   var require_local_account = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -810,7 +810,7 @@ ${error?.stack || ""}
     }
   });
 
-  // ../browsery-gecko/platform/shims/os.js
+  // browsery-gecko/platform/shims/os.js
   var os_exports = {};
   __export(os_exports, {
     EOL: () => EOL,
@@ -823,7 +823,7 @@ ${error?.stack || ""}
   });
   var hostname, platform2, homedir, freemem, totalmem, EOL, os_default;
   var init_os = __esm({
-    "../browsery-gecko/platform/shims/os.js"() {
+    "browsery-gecko/platform/shims/os.js"() {
       init_globals();
       hostname = () => {
         try {
@@ -847,9 +847,9 @@ ${error?.stack || ""}
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/account-server.cjs
+  // Browsery-windows-build-1.0.15/electron/account-server.cjs
   var require_account_server = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -976,7 +976,7 @@ ${error?.stack || ""}
     }
   });
 
-  // ../browsery-gecko/platform/shims/url.js
+  // browsery-gecko/platform/shims/url.js
   var url_exports = {};
   __export(url_exports, {
     URL_: () => URL_,
@@ -992,16 +992,16 @@ ${error?.stack || ""}
   }
   var URL_, url_default;
   var init_url = __esm({
-    "../browsery-gecko/platform/shims/url.js"() {
+    "browsery-gecko/platform/shims/url.js"() {
       init_globals();
       URL_ = URL;
       url_default = { domainToASCII, URL };
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/surrogates.cjs
+  // Browsery-windows-build-1.0.15/electron/surrogates.cjs
   var require_surrogates = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
       init_globals();
       var SURROGATES2 = {
         // Google Publisher Tag (gpt.js)
@@ -1112,9 +1112,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/adblocker.cjs
+  // Browsery-windows-build-1.0.15/electron/adblocker.cjs
   var require_adblocker = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
       "use strict";
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -1840,9 +1840,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
+  // Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
   var require_link_cleaner = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
       init_globals();
       var TRACKING_PARAMS = /* @__PURE__ */ new Set(["fbclid", "gclid", "gclsrc", "dclid", "gbraid", "wbraid", "gad_source", "msclkid", "yclid", "twclid", "ttclid", "li_fat_id", "igshid", "igsh", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "__hssc", "__hstc", "__hsfp", "hsctatracking", "mkt_tok", "oly_anon_id", "oly_enc_id", "vero_id", "vero_conv", "wickedid", "rb_clickid", "s_cid", "srsltid", "epik", "_openstat", "ml_subscriber", "ml_subscriber_hash", "ck_subscriber_id", "spm", "scm", "_gl", "trk", "trkCampaign", "sc_campaign", "sc_channel", "sc_content", "sc_medium", "sc_outcome", "sc_geo", "sc_country"]);
       var SITE_TRACKING_PARAMS = [
@@ -1886,7 +1886,7 @@ var inst=new Detector();
     }
   });
 
-  // ../browsery-gecko/platform/shims/electron.js
+  // browsery-gecko/platform/shims/electron.js
   var electron_exports = {};
   __export(electron_exports, {
     app: () => app,
@@ -1942,7 +1942,7 @@ var inst=new Detector();
   }
   var KEY_FILE, key, osProtected, randomKey, safeStorage, app, clipboardHelper, clipboard, electron_default;
   var init_electron = __esm({
-    "../browsery-gecko/platform/shims/electron.js"() {
+    "browsery-gecko/platform/shims/electron.js"() {
       init_globals();
       init_buffer();
       init_fs();
@@ -2021,7 +2021,7 @@ var inst=new Detector();
     }
   });
 
-  // ../browsery-gecko/platform/shims/util.js
+  // browsery-gecko/platform/shims/util.js
   var util_exports = {};
   __export(util_exports, {
     TextDecoder: () => TextDecoderImpl,
@@ -2030,7 +2030,7 @@ var inst=new Detector();
   });
   var TextDecoderImpl, TextEncoderImpl, util_default;
   var init_util = __esm({
-    "../browsery-gecko/platform/shims/util.js"() {
+    "browsery-gecko/platform/shims/util.js"() {
       init_globals();
       TextDecoderImpl = globalThis.TextDecoder;
       TextEncoderImpl = globalThis.TextEncoder;
@@ -2038,9 +2038,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/package.json
+  // Browsery-windows-build-1.0.15/package.json
   var require_package = __commonJS({
-    "../Browsery-windows-build-1.0.15/package.json"(exports, module) {
+    "Browsery-windows-build-1.0.15/package.json"(exports, module) {
       module.exports = {
         name: "browsery-magic-cursor",
         productName: "Browsery",
@@ -2135,9 +2135,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
+  // Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
   var require_browsery_knowledge = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
       "use strict";
       init_globals();
       var packageVersion = "";
@@ -2491,9 +2491,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/ai-overview.cjs
+  // Browsery-windows-build-1.0.15/electron/ai-overview.cjs
   var require_ai_overview = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -2970,19 +2970,19 @@ ${BROWSERY_KNOWLEDGE}`;
         const apiKey = readApiKey();
         if (!apiKey) return { status: missingKeyStatus() };
         if (!Array.isArray(segments) || !segments.length) return { status: "no-text" };
-        const clean = segments.slice(0, 800).map((value) => String(value == null ? "" : value).slice(0, 2e3));
-        const translations = new Array(clean.length);
+        const clean2 = segments.slice(0, 800).map((value) => String(value == null ? "" : value).slice(0, 2e3));
+        const translations = new Array(clean2.length);
         const chunks = [];
         let current = [], currentLen = 0, start2 = 0;
-        for (let i = 0; i < clean.length; i++) {
-          if (current.length >= 40 || currentLen + clean[i].length > 3500) {
+        for (let i = 0; i < clean2.length; i++) {
+          if (current.length >= 40 || currentLen + clean2[i].length > 3500) {
             chunks.push({ start: start2, items: current });
             current = [];
             currentLen = 0;
             start2 = i;
           }
-          current.push(clean[i]);
-          currentLen += clean[i].length;
+          current.push(clean2[i]);
+          currentLen += clean2[i].length;
         }
         if (current.length) chunks.push({ start: start2, items: current });
         for (const chunk of chunks) {
@@ -3044,9 +3044,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/credentials.cjs
+  // Browsery-windows-build-1.0.15/electron/credentials.cjs
   var require_credentials = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2, clipboard: clipboard2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -3245,9 +3245,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/global-control.cjs
+  // Browsery-windows-build-1.0.15/electron/global-control.cjs
   var require_global_control = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -3505,11 +3505,11 @@ ${BROWSERY_KNOWLEDGE}`;
             }
           },
           saveAdminSecret(secret) {
-            const clean = typeof secret === "string" ? secret.trim() : "";
+            const clean2 = typeof secret === "string" ? secret.trim() : "";
             if (!service) return { ok: false, message: "The shared service is not configured in this Browsery build yet." };
             if (!safeStorage2?.isEncryptionAvailable?.()) return { ok: false, message: "Windows secure storage is unavailable, so the admin key will not be stored." };
-            if (clean.length < 32 || clean.length > 512) return { ok: false, message: "Use the 32-character-or-longer secret configured on the Supabase server." };
-            adminBundle = { secret: clean };
+            if (clean2.length < 32 || clean2.length > 512) return { ok: false, message: "Use the 32-character-or-longer secret configured on the Supabase server." };
+            adminBundle = { secret: clean2 };
             if (!writeEncrypted("browsery-global-admin.bin", adminBundle)) {
               adminBundle = null;
               return { ok: false, message: "Could not securely save the admin key on this computer." };
@@ -3657,9 +3657,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/browsery-search.cjs
+  // Browsery-windows-build-1.0.15/electron/browsery-search.cjs
   var require_browsery_search = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
       init_globals();
       var path = (init_path(), __toCommonJS(path_exports));
       var { randomUUID: randomUUID2 } = (init_crypto(), __toCommonJS(crypto_exports));
@@ -4254,10 +4254,10 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // platform/index.js
+  // browsery-v2/platform/index.js
   init_globals();
 
-  // ../browsery-gecko/platform/webview.js
+  // browsery-gecko/platform/webview.js
   init_globals();
   var lazy = {};
   ChromeUtils.defineESModuleGetters(lazy, {
@@ -4774,7 +4774,7 @@ ${BROWSERY_KNOWLEDGE}`;
     }).observe(doc.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["src"] });
   }
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   init_globals();
   init_fs();
   init_buffer();
@@ -4786,7 +4786,7 @@ ${BROWSERY_KNOWLEDGE}`;
   var import_ai_overview = __toESM(require_ai_overview());
   var import_credentials = __toESM(require_credentials());
 
-  // ../Browsery-windows-build-1.0.15/electron/adblock-rules.json
+  // Browsery-windows-build-1.0.15/electron/adblock-rules.json
   var adblock_rules_default = {
     version: "2026.10.13.1",
     updatedAt: 17918496e5,
@@ -5002,10 +5002,10 @@ ${BROWSERY_KNOWLEDGE}`;
     ]
   };
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   var import_global_control = __toESM(require_global_control());
 
-  // ../Browsery-windows-build-1.0.15/electron/global-control-config.json
+  // Browsery-windows-build-1.0.15/electron/global-control-config.json
   var global_control_config_default = {
     supabaseUrl: "https://lnowharqxuxnudntqkxc.supabase.co",
     supabaseAnonKey: "sb_publishable_55ywwCbGEGX7U_7sULQkRA_aijy28qY",
@@ -5013,10 +5013,10 @@ ${BROWSERY_KNOWLEDGE}`;
     captchaHost: "lolypop7661-a11y.github.io"
   };
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   init_electron();
 
-  // ../browsery-gecko/platform/permissions.js
+  // browsery-gecko/platform/permissions.js
   init_globals();
   var LABELS = {
     media: "camera or microphone",
@@ -5191,7 +5191,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // ../browsery-gecko/platform/updater.js
+  // browsery-gecko/platform/updater.js
   init_globals();
   var lazy2 = {};
   ChromeUtils.defineESModuleGetters(lazy2, {
@@ -5299,7 +5299,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!await IOUtils.exists(backup)) return false;
       const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
       const local = await readLocalBuild();
-      if (info && local && true && 202611131704 !== local.build) return false;
+      if (info && local && true && 202611131858 !== local.build) return false;
       await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
       log3?.(`interface update ${info?.toBuild || ""} confirmed`);
       return true;
@@ -5729,7 +5729,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // ../browsery-gecko/platform/search-pages.js
+  // browsery-gecko/platform/search-pages.js
   init_globals();
   var import_browsery_search = __toESM(require_browsery_search());
   var SEARCH_ADDRESS = /^browsery:\/\/search\/?(\?[^#]*)?(#.*)?$/i;
@@ -5804,7 +5804,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { rewrite, call };
   }
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   var lazy3 = {};
   ChromeUtils.defineESModuleGetters(lazy3, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs",
@@ -6000,7 +6000,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       const suffix = labels.slice(-2).join(".");
       return labels.slice(/^(?:co|com|org|net|gov|ac|edu)\.[a-z]{2}$/.test(suffix) ? -3 : -2).join(".");
     };
-    const hostOf = (value) => {
+    const hostOf2 = (value) => {
       try {
         return new URL(value).hostname;
       } catch {
@@ -6057,7 +6057,7 @@ ${permission}`, { origin, permission, decision: "allow" });
           channel2.cancel(Cr.NS_ERROR_ABORT);
           return;
         }
-        if (type === "ping" && trackerBlockingOn() && initiator && siteOf(hostOf(url)) !== siteOf(hostOf(initiator))) channel2.cancel(Cr.NS_ERROR_ABORT);
+        if (type === "ping" && trackerBlockingOn() && initiator && siteOf(hostOf2(url)) !== siteOf(hostOf2(initiator))) channel2.cancel(Cr.NS_ERROR_ABORT);
       }
     };
     const contextFor = (partition) => partition === "private" ? privateContextId : 0;
@@ -6745,7 +6745,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { desktop, init, emit, on, flush, prefs: () => prefs, accounts: () => localAccount, protection: () => adblocker };
   }
 
-  // ../browsery-gecko/platform/chrome-helpers.js
+  // browsery-gecko/platform/chrome-helpers.js
   init_globals();
   function installChromeHelpers(win, { emit, log: log3, aiMenu = true, extraItems = null }) {
     const doc = win.document;
@@ -7148,7 +7148,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     }, { capture: true, passive: true });
   }
 
-  // ../browsery-gecko/platform/storage.js
+  // browsery-gecko/platform/storage.js
   init_globals();
   init_fs();
   var MemoryStorage = class {
@@ -7208,7 +7208,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return local;
   }
 
-  // ../browsery-gecko/platform/diagnostics.js
+  // browsery-gecko/platform/diagnostics.js
   init_globals();
   var MAX_LOG_BYTES = 768 * 1024;
   function probeDir() {
@@ -7409,7 +7409,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     win.setInterval(report, 1e3);
   }
 
-  // platform/google.js
+  // browsery-v2/platform/google.js
   init_globals();
   var SESSION_COOKIES = /* @__PURE__ */ new Set(["SID", "__Secure-1PSID", "__Secure-3PSID", "SAPISID", "__Secure-1PAPISID"]);
   var GOOGLE_DOMAINS = ["google.com", "youtube.com", "gmail.com", "googleusercontent.com", "google.co.uk", "google.de"];
@@ -7504,10 +7504,198 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/tools.js
+  // browsery-v2/platform/tools.js
   init_globals();
   var import_credentials2 = __toESM(require_credentials());
   var import_ai_overview2 = __toESM(require_ai_overview());
+
+  // browsery-v2/platform/arc.js
+  init_globals();
+  var isWeb = (url) => /^https?:\/\//i.test(String(url || ""));
+  var hostOf = (url) => {
+    try {
+      return new URL(url).hostname.replace(/^www\./, "");
+    } catch {
+      return String(url || "");
+    }
+  };
+  var clean = (text) => String(text ?? "").replace(/\s+/g, " ").trim();
+  function pairs(list) {
+    const map = /* @__PURE__ */ new Map();
+    if (!Array.isArray(list)) return map;
+    for (let i = 0; i + 1 < list.length; i++) {
+      if (typeof list[i] === "string" && list[i + 1] && typeof list[i + 1] === "object") {
+        map.set(list[i], list[i + 1]);
+        i++;
+      }
+    }
+    return map;
+  }
+  function containerAfter(ids, marker) {
+    if (!Array.isArray(ids)) return null;
+    for (let i = 0; i + 1 < ids.length; i++) {
+      const here = ids[i];
+      const isMarker = here === marker || here && typeof here === "object" && Object.prototype.hasOwnProperty.call(here, marker);
+      if (isMarker && typeof ids[i + 1] === "string") return ids[i + 1];
+    }
+    return null;
+  }
+  function emojiOf(info) {
+    const type = info?.iconType || {};
+    const value = type.emoji_v2 ?? type.emoji;
+    if (typeof value === "number" && value > 0) {
+      try {
+        return String.fromCodePoint(value);
+      } catch {
+        return "";
+      }
+    }
+    return typeof value === "string" ? value.trim().slice(0, 8) : "";
+  }
+  function childrenOf(id, items) {
+    const item = items.get(id);
+    if (Array.isArray(item?.childrenIds) && item.childrenIds.length) return item.childrenIds;
+    const out = [];
+    for (const [childId, child] of items) if (child?.parentID === id) out.push(childId);
+    return out;
+  }
+  function collect(id, items, path, out, seen) {
+    if (seen.has(id)) return;
+    seen.add(id);
+    const item = items.get(id);
+    if (!item) return;
+    const data = item.data || {};
+    if (data.tab) {
+      const url = data.tab.savedURL || data.tab.url;
+      if (isWeb(url)) out.push({ url, title: clean(item.title) || clean(data.tab.savedTitle) || hostOf(url), folder: path });
+      return;
+    }
+    const folder = data.list !== void 0 ? clean(item.title) || "Folder" : "";
+    const next = folder ? [...path, folder] : path;
+    for (const child of childrenOf(id, items)) collect(child, items, next, out, seen);
+  }
+  function parseArcSidebar(json) {
+    const containers = Array.isArray(json?.sidebar?.containers) ? json.sidebar.containers : [];
+    const main = containers.find((c) => c && Array.isArray(c.spaces) && Array.isArray(c.items));
+    if (!main) throw new Error("That file doesn\u2019t look like Arc\u2019s sidebar.");
+    const items = pairs(main.items);
+    const synced = /* @__PURE__ */ new Map();
+    for (const [id, model] of pairs(json?.firebaseSyncState?.syncData?.spaceModels)) synced.set(id, model?.value || model || {});
+    const spaces = [];
+    let unnamed = 0;
+    for (const [id, space] of pairs(main.spaces)) {
+      const model = synced.get(id) || {};
+      const name = clean(space.title) || clean(model.title) || `Arc space ${++unnamed}`;
+      const icon = emojiOf(space.customInfo) || emojiOf(model.customInfo);
+      const pinned = containerAfter(space.newContainerIDs, "pinned") || containerAfter(space.containerIDs, "pinned");
+      const tabs = [];
+      const seen = /* @__PURE__ */ new Set();
+      if (pinned) for (const child of childrenOf(pinned, items)) collect(child, items, [], tabs, seen);
+      spaces.push({ name, icon, tabs });
+    }
+    const favorites = [];
+    const seenUrls = /* @__PURE__ */ new Set();
+    const tops = [...items].filter(([, item]) => item?.data?.itemContainer?.containerType?.topApps).sort(([, a], [, b]) => Number(Boolean(b.data.itemContainer.containerType.topApps?._0?.default)) - Number(Boolean(a.data.itemContainer.containerType.topApps?._0?.default)));
+    for (const [id] of tops) {
+      const found = [];
+      const seen = /* @__PURE__ */ new Set();
+      for (const child of childrenOf(id, items)) collect(child, items, [], found, seen);
+      for (const tab of found) if (!seenUrls.has(tab.url)) {
+        seenUrls.add(tab.url);
+        favorites.push({ url: tab.url, title: tab.title });
+      }
+    }
+    return { spaces, favorites };
+  }
+  function bareUrl(text) {
+    let url = String(text).match(/https?:\/\/[^\s<>"\]]+/i)?.[0];
+    if (!url) return "";
+    for (; ; ) {
+      if (/[.,;:!?'"]$/.test(url)) url = url.slice(0, -1);
+      else if (url.endsWith(")") && url.split("(").length < url.split(")").length) url = url.slice(0, -1);
+      else return url;
+    }
+  }
+  var SECTION = /^(pinned( tabs)?|unpinned( tabs)?|today|other( sidebar)? tabs|sidebar tabs|tabs|sidebar)$/i;
+  var FAVORITES = /^(favou?rites|essentials|top apps)$/i;
+  function parseArcExport(text) {
+    const lines = String(text || "").replace(/\r/g, "").split("\n");
+    const headingOf = (line) => line.match(/^(#{1,6})\s+(.*?)\s*#*\s*$/);
+    const levels = lines.map(headingOf).filter(Boolean).map((m) => m[1].length);
+    let spaceLevel = levels.length ? Math.min(...levels) : 0;
+    if (levels.filter((level) => level === spaceLevel).length === 1 && levels.some((level) => level > spaceLevel)) spaceLevel = Math.min(...levels.filter((level) => level > spaceLevel));
+    const spaces = [];
+    const favorites = [];
+    const seenFavorites = /* @__PURE__ */ new Set();
+    let space = null;
+    let headingPath = [];
+    let inFavorites = false;
+    let listFolders = [];
+    const ensureSpace = () => {
+      if (!space) {
+        space = { name: "Arc", icon: "", tabs: [] };
+        spaces.push(space);
+      }
+      return space;
+    };
+    for (const raw of lines) {
+      const heading = headingOf(raw);
+      if (heading) {
+        const level = heading[1].length;
+        const name = clean(heading[2].replace(/[*_`]/g, "")).replace(/^space:\s*/i, "");
+        listFolders = [];
+        if (level < spaceLevel) continue;
+        if (level === spaceLevel) {
+          space = { name: name || `Arc space ${spaces.length + 1}`, icon: "", tabs: [] };
+          spaces.push(space);
+          headingPath = [];
+          inFavorites = false;
+          continue;
+        }
+        const depth = level - spaceLevel - 1;
+        inFavorites = FAVORITES.test(name);
+        headingPath = headingPath.slice(0, depth);
+        if (!inFavorites && !SECTION.test(name)) headingPath[depth] = name;
+        headingPath = headingPath.filter(Boolean);
+        continue;
+      }
+      const indent = raw.match(/^\s*/)[0].replace(/\t/g, "    ").length;
+      const body = raw.trim().replace(/^([-*+]|\d+[.)])\s+/, "");
+      if (!body) continue;
+      const md = body.match(/\[([^\]]*)\]\((https?:\/\/\S+)\)/i);
+      const angle = body.match(/<(https?:\/\/[^>\s]+)>/i);
+      const url = md?.[2] || angle?.[1] || bareUrl(body);
+      while (listFolders.length && listFolders[listFolders.length - 1].indent >= indent) listFolders.pop();
+      if (!url) {
+        if (/^\s*([-*+]|\d+[.)])\s+/.test(raw)) {
+          const name = clean(body.replace(/[*_`]/g, "").replace(/:$/, ""));
+          if (FAVORITES.test(name)) {
+            inFavorites = true;
+            continue;
+          }
+          if (name && !SECTION.test(name)) listFolders.push({ indent, name });
+        }
+        continue;
+      }
+      const title = clean(md?.[1]) || clean(body.replace(url, "").replace(/[[\]()<>]/g, "").replace(/^[-–—:|\s]+|[-–—:|\s]+$/g, "")) || hostOf(url);
+      if (inFavorites) {
+        if (!seenFavorites.has(url)) {
+          seenFavorites.add(url);
+          favorites.push({ url, title });
+        }
+        continue;
+      }
+      ensureSpace().tabs.push({ url, title, folder: [...headingPath, ...listFolders.map((item) => item.name)] });
+    }
+    return { spaces: spaces.filter((item) => item.tabs.length), favorites };
+  }
+  function parseArcFile(text) {
+    const trimmed = String(text || "").trimStart();
+    if (trimmed.startsWith("{")) return parseArcSidebar(JSON.parse(trimmed));
+    return parseArcExport(text);
+  }
+
+  // browsery-v2/platform/tools.js
   var lazy4 = {};
   ChromeUtils.defineESModuleGetters(lazy4, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs",
@@ -7688,12 +7876,29 @@ ${permission}`, { origin, permission, decision: "allow" });
         return null;
       }
     }
+    async function arcFolder() {
+      const forced = Services.env.get("BROWSERY_ARC_DIR");
+      if (forced) return await IOUtils.exists(PathUtils.join(forced, "StorableSidebar.json")) ? forced : null;
+      try {
+        for (const child of await IOUtils.getChildren(PathUtils.join(LOCAL(), "Packages"))) {
+          if (!/^TheBrowserCompany\.Arc/i.test(PathUtils.filename(child))) continue;
+          const dir = PathUtils.join(child, "LocalCache", "Local", "Arc");
+          if (await IOUtils.exists(PathUtils.join(dir, "StorableSidebar.json"))) return dir;
+        }
+      } catch {
+      }
+      return null;
+    }
     async function importSources() {
       const out = [];
-      for (const [id, [label, root]] of Object.entries(CHROMIUM())) {
-        if (await chromiumProfile(root).catch(() => null)) out.push({ id, label });
+      if (await arcFolder()) out.push({ id: "arc", label: "Arc" });
+      try {
+        for (const [id, [label, root]] of Object.entries(CHROMIUM())) {
+          if (await chromiumProfile(root).catch(() => null)) out.push({ id, label });
+        }
+      } catch {
       }
-      if (await firefoxProfile()) out.push({ id: "firefox", label: "Firefox" });
+      if (await firefoxProfile().catch(() => null)) out.push({ id: "firefox", label: "Firefox" });
       return out;
     }
     async function readDb(file, sql, params = {}) {
@@ -7714,19 +7919,52 @@ ${permission}`, { origin, permission, decision: "allow" });
         }
       }
     }
+    const WEB = { web: "http%" };
     const fromChromeTime = (value) => Math.round(Number(value) / 1e3 - 116444736e5);
-    async function importFrom(id, { history = true, bookmarks = true } = {}) {
+    async function chromiumHistory(dir) {
+      const rows = await readDb(PathUtils.join(dir, "History"), `SELECT url, title, last_visit_time AS visited FROM urls WHERE url LIKE :web ORDER BY last_visit_time DESC LIMIT 5000`, WEB);
+      return rows.map((r) => ({ url: r.getResultByName("url"), title: r.getResultByName("title") || "", visitedAt: fromChromeTime(r.getResultByName("visited")) }));
+    }
+    async function importArc({ file = "", history = true } = {}) {
+      const dir = file ? null : await arcFolder();
+      const path = file || dir && PathUtils.join(dir, "StorableSidebar.json");
+      if (!path) throw new Error("Arc wasn\u2019t found on this PC. In Arc, use Settings \u203A Advanced \u203A Export Data, then pick that file here.");
+      const arc = parseArcFile(await IOUtils.readUTF8(path));
+      const now = Date.now();
+      const bookmarks = [];
+      for (const space of arc.spaces) for (const tab of space.tabs) bookmarks.push({ url: tab.url, title: tab.title, folder: ["Arc \xB7 " + space.name, ...tab.folder].join(" \u203A "), addedAt: now });
+      for (const tab of arc.favorites) bookmarks.push({ url: tab.url, title: tab.title, folder: "Arc \xB7 Favorites", addedAt: now });
+      let visits = [];
+      const profile = dir && history ? await chromiumProfile(PathUtils.join(dir, "User Data")).catch(() => null) : null;
+      if (profile && await IOUtils.exists(PathUtils.join(profile, "History"))) visits = await chromiumHistory(profile).catch((error) => {
+        log3(`arc history: ${error}`);
+        return [];
+      });
+      log3(`arc import: ${arc.spaces.length} spaces, ${arc.spaces.reduce((n, space) => n + space.tabs.length, 0)} tabs, ${arc.favorites.length} favorites, ${visits.length} history entries`);
+      return { arc, bookmarks, history: visits };
+    }
+    async function importArcFile() {
+      const picker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+      picker.init(win.browsingContext, "Pick your Arc file", Ci.nsIFilePicker.modeOpen);
+      picker.appendFilter("Arc export or sidebar file", "*.md; *.json; *.txt");
+      picker.appendFilters(Ci.nsIFilePicker.filterAll);
+      const answer = await new Promise((resolve2) => picker.open(resolve2));
+      if (answer !== Ci.nsIFilePicker.returnOK || !picker.file) return null;
+      return importArc({ file: picker.file.path, history: false });
+    }
+    async function importFrom(id, { history = true, bookmarks = true, file = "" } = {}) {
+      if (id === "arc") return importArc({ file, history });
       const result = { bookmarks: [], history: [] };
       if (id === "firefox") {
         const dir2 = await firefoxProfile();
         if (!dir2) throw new Error("Firefox profile not found.");
         const places = PathUtils.join(dir2, "places.sqlite");
         if (bookmarks) {
-          const rows = await readDb(places, `SELECT p.url AS url, b.title AS title, b.dateAdded AS added, parent.title AS folder FROM moz_bookmarks b JOIN moz_places p ON p.id = b.fk LEFT JOIN moz_bookmarks parent ON parent.id = b.parent WHERE b.type = 1 AND p.url LIKE 'http%' LIMIT 20000`);
+          const rows = await readDb(places, `SELECT p.url AS url, b.title AS title, b.dateAdded AS added, parent.title AS folder FROM moz_bookmarks b JOIN moz_places p ON p.id = b.fk LEFT JOIN moz_bookmarks parent ON parent.id = b.parent WHERE b.type = 1 AND p.url LIKE :web LIMIT 20000`, WEB);
           result.bookmarks = rows.map((r) => ({ url: r.getResultByName("url"), title: r.getResultByName("title") || "", folder: r.getResultByName("folder") || "", addedAt: Math.round(Number(r.getResultByName("added") || 0) / 1e3) || Date.now() }));
         }
         if (history) {
-          const rows = await readDb(places, `SELECT url, title, last_visit_date AS visited FROM moz_places WHERE last_visit_date IS NOT NULL AND url LIKE 'http%' ORDER BY last_visit_date DESC LIMIT 5000`);
+          const rows = await readDb(places, `SELECT url, title, last_visit_date AS visited FROM moz_places WHERE last_visit_date IS NOT NULL AND url LIKE :web ORDER BY last_visit_date DESC LIMIT 5000`, WEB);
           result.history = rows.map((r) => ({ url: r.getResultByName("url"), title: r.getResultByName("title") || "", visitedAt: Math.round(Number(r.getResultByName("visited")) / 1e3) }));
         }
         return result;
@@ -7744,10 +7982,7 @@ ${permission}`, { origin, permission, decision: "allow" });
         };
         for (const root of Object.values(data.roots || {})) walk(root, "");
       }
-      if (history && await IOUtils.exists(PathUtils.join(dir, "History"))) {
-        const rows = await readDb(PathUtils.join(dir, "History"), `SELECT url, title, last_visit_time AS visited FROM urls WHERE url LIKE 'http%' ORDER BY last_visit_time DESC LIMIT 5000`);
-        result.history = rows.map((r) => ({ url: r.getResultByName("url"), title: r.getResultByName("title") || "", visitedAt: fromChromeTime(r.getResultByName("visited")) }));
-      }
+      if (history && await IOUtils.exists(PathUtils.join(dir, "History"))) result.history = await chromiumHistory(dir);
       return result;
     }
     function translationsActor(id) {
@@ -7823,11 +8058,11 @@ ${permission}`, { origin, permission, decision: "allow" });
     function launchProfile({ name = "", guest = false } = {}) {
       const launcher = launcherFile();
       if (!launcher) return { ok: false, message: "Profiles need Browsery.exe next to the engine folder." };
-      const clean = String(name).replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 40);
-      if (!guest && !clean) return { ok: false, message: "Give the profile a name." };
+      const clean2 = String(name).replace(/[^\p{L}\p{N} _-]/gu, "").trim().slice(0, 40);
+      if (!guest && !clean2) return { ok: false, message: "Give the profile a name." };
       const process2 = Cc["@mozilla.org/process/util;1"].createInstance(Ci.nsIProcess);
       process2.init(launcher);
-      process2.runw(false, [guest ? "--guest" : clean === "Main" ? "" : `--profile=${clean}`].filter(Boolean), guest || clean !== "Main" ? 1 : 0);
+      process2.runw(false, [guest ? "--guest" : clean2 === "Main" ? "" : `--profile=${clean2}`].filter(Boolean), guest || clean2 !== "Main" ? 1 : 0);
       return { ok: true };
     }
     async function checkBreaches() {
@@ -8040,9 +8275,9 @@ ${permission}`, { origin, permission, decision: "allow" });
     }
     async function saveFolder(name, files2) {
       const base = await lazy4.Downloads.getPreferredDownloadsDirectory();
-      const clean = safeName(name, "x").slice(0, -2);
-      let folder = PathUtils.join(base, clean);
-      for (let n = 2; await IOUtils.exists(folder); n++) folder = PathUtils.join(base, `${clean} (${n})`);
+      const clean2 = safeName(name, "x").slice(0, -2);
+      let folder = PathUtils.join(base, clean2);
+      for (let n = 2; await IOUtils.exists(folder); n++) folder = PathUtils.join(base, `${clean2} (${n})`);
       await IOUtils.makeDirectory(folder, { ignoreExisting: true });
       for (const file of files2) await IOUtils.writeUTF8(PathUtils.join(folder, String(file.name).replace(/[\\/:*?"<>|]/g, "_")), String(file.text ?? ""));
       return { ok: true, path: folder, name: PathUtils.filename(folder), count: files2.length };
@@ -8221,11 +8456,15 @@ ${permission}`, { origin, permission, decision: "allow" });
       importFrom: (id, options) => importFrom(id, options).then((data) => ({ ok: true, ...data })).catch((error) => {
         log3(`import ${id}: ${error}`);
         return { ok: false, message: String(error?.message || error) };
+      }),
+      importArcFile: () => importArcFile().then((data) => data ? { ok: true, ...data } : { ok: false, cancelled: true }).catch((error) => {
+        log3(`import arc file: ${error}`);
+        return { ok: false, message: /JSON|Arc’s sidebar/.test(String(error)) ? "That file isn\u2019t one of Arc\u2019s. Pick \u201CArc Data Export.md\u201D (Arc \u203A Settings \u203A Advanced \u203A Export Data) or StorableSidebar.json." : String(error?.message || error) };
       })
     };
   }
 
-  // platform/extensions.js
+  // browsery-v2/platform/extensions.js
   init_globals();
   var AMO = "https://addons.mozilla.org/api/v5/addons";
   var AUDIT_KEY = "browsery:extensions-audit";
@@ -8639,7 +8878,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/notifications.js
+  // browsery-v2/platform/notifications.js
   init_globals();
   function installPopupNotifications(win, { emit, on, log: log3 }) {
     const active = /* @__PURE__ */ new Map();
@@ -8724,7 +8963,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/family.js
+  // browsery-v2/platform/family.js
   init_globals();
   function hostMatches(host, rule) {
     const h = String(host || "").toLowerCase().replace(/^www\./, "");
@@ -8833,7 +9072,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/apps.js
+  // browsery-v2/platform/apps.js
   init_globals();
   var APPS_KEY = "browsery:apps";
   function createApps(win, { log: log3 }) {
@@ -9019,7 +9258,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/privacy.js
+  // browsery-v2/platform/privacy.js
   init_globals();
   var COMPANIES = [
     ["Google", /(^|\.)(google-analytics|googletagmanager|googlesyndication|googleadservices|doubleclick|2mdn|googletagservices|gstatic|google)\.(com|net)$/],
@@ -9282,7 +9521,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/downloadsx.js
+  // browsery-v2/platform/downloadsx.js
   init_globals();
   var lazy6 = {};
   ChromeUtils.defineESModuleGetters(lazy6, {
@@ -9324,20 +9563,20 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/shield.js
+  // browsery-v2/platform/shield.js
   init_globals();
 
-  // platform/shield-engine.js
+  // browsery-v2/platform/shield-engine.js
   init_globals();
 
-  // platform/shield-signatures.js
+  // browsery-v2/platform/shield-signatures.js
   init_globals();
   var SIGNATURES = {
     // the EICAR antivirus test file (harmless; every scanner is expected to flag it)
     "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f": "EICAR-Test-File (not a virus)"
   };
 
-  // platform/shield-engine.js
+  // browsery-v2/platform/shield-engine.js
   var RISKY_EXT = /\.(exe|msi|msix|appx|bat|cmd|com|scr|pif|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|lnk|reg|jar|dll|cpl|iso|img|vhd|vhdx|docm|xlsm|pptm|one|url|scf|chm)$/i;
   var PROGRAM_EXT = /\.(exe|scr|com|pif|dll|cpl|msi|sys)$/i;
   var SCRIPT_EXT = /\.(bat|cmd|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|reg|url|scf|sh)$/i;
@@ -9563,7 +9802,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { verdict, score, threat, findings };
   }
 
-  // platform/shield.js
+  // browsery-v2/platform/shield.js
   var lazy7 = {};
   ChromeUtils.defineESModuleGetters(lazy7, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs"
@@ -9769,7 +10008,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/selftest.js
+  // browsery-v2/platform/selftest.js
   init_globals();
   function selfTestDir() {
     try {
@@ -10179,7 +10418,7 @@ ${error?.stack || ""}`);
     }
   }
 
-  // platform/pip.js
+  // browsery-v2/platform/pip.js
   init_globals();
   var ACTORS = {
     PictureInPictureLauncher: {
@@ -10284,7 +10523,7 @@ ${error?.stack || ""}`);
     return { ok: true };
   }
 
-  // platform/media.js
+  // browsery-v2/platform/media.js
   init_globals();
   var EVENTS = ["activated", "deactivated", "metadatachange", "playbackstatechange", "supportedkeyschange", "positionstatechange"];
   var ACTIONS = /* @__PURE__ */ new Set(["play", "pause", "stop", "prevTrack", "nextTrack", "seekBackward", "seekForward"]);
@@ -10414,7 +10653,7 @@ ${error?.stack || ""}`);
     };
   }
 
-  // ../browsery-gecko/platform/shared-prefs.js
+  // browsery-gecko/platform/shared-prefs.js
   init_globals();
   var SHARED = ["browsery.content.allowlist", "browsery.content.darkOn", "browsery.content.darkOff", "browsery.content.hidden"];
   function shareContentPrefs(log3 = () => {
@@ -10457,7 +10696,7 @@ ${error?.stack || ""}`);
     };
   }
 
-  // platform/hide.js
+  // browsery-v2/platform/hide.js
   init_globals();
   var PREF = "browsery.content.hidden";
   function hiddenRules() {
@@ -10511,7 +10750,7 @@ ${error?.stack || ""}`);
     return { ok: true };
   }
 
-  // platform/index.js
+  // browsery-v2/platform/index.js
   globalThis.BROWSERY_GECKO_VERSION = "2.1.0";
   globalThis.BROWSERY_INTERFACE_VERSION = "2.1.0";
   window.__browseryProbeControls = { omnibox: ".v2-urlbar input", newTab: ".v2-newtab-button", settings: ".v2-settings-button" };
@@ -10573,7 +10812,7 @@ ${error?.stack || ""}`);
       } catch {
       }
       try {
-        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131704 });
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131858 });
       } catch {
       }
       win.addEventListener("unload", () => {
@@ -10700,7 +10939,7 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
-      build: 202611131704,
+      build: 202611131858,
       // The interface calls this once it is on screen: an update that just went in is
       // kept (shell/guard.js would otherwise put the previous files back), and files
       // no build lists any more are cleared out a little later.
@@ -10754,7 +10993,7 @@ ${error?.stack || ""}`);
         } catch {
         }
         return [
-          `Browsery ${"2.1.0"} (build ${202611131704})`,
+          `Browsery ${"2.1.0"} (build ${202611131858})`,
           `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
           `Graphics: ${renderer || "unknown"}`,
           `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
