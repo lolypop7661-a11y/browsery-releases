@@ -345,7 +345,24 @@ export class BrowseryPageChild extends JSWindowActorChild {
     return videos.find(video => !video.paused) || videos.sort((a, b) => area(b) - area(a))[0];
   }
 
+  // A form was sent with a field left empty or filled in wrongly (required, type=email,
+  // min/max…). Firefox shows the field's message in a bubble its own window draws;
+  // Browsery's window has no such bubble, so the message goes to the interface, which
+  // shows it. (Gecko's own code has already put the cursor in the field.)
+  reportInvalid(elements) {
+    try {
+      for (const element of elements || []) {
+        if (!element || element.ownerDocument?.defaultView !== this.contentWindow) continue;
+        const message = String((element.internals?.validationMessage ?? element.validationMessage) || '').trim();
+        if (!message) continue;
+        this.sendAsyncMessage('Browsery:Invalid', { message: message.slice(0, 200) });
+        return;
+      }
+    } catch {}
+  }
+
   handleEvent(event) {
+    if (event.type === 'MozInvalidForm') { this.reportInvalid(event.detail); return; }
     if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.darken(); this.watchGestures(); }
     if (event.type === 'load') this.darken();
     if (event.type === 'DOMWindowCreated') { this.exposeBrowseryPage(); if (this.webOnlyGoogle()) return; this.protect(); this.skinGoogle(); this.applyHidden(); }

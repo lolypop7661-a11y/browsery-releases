@@ -4498,29 +4498,141 @@ ${BROWSERY_KNOWLEDGE}`;
     shims.set(doc, shim);
     return shim;
   }
+  var GUEST_ATTRIBUTES = {
+    type: "content",
+    remote: "true",
+    maychangeremoteness: "true",
+    messagemanagergroup: "browsers",
+    nodefaultsrc: "true",
+    selectmenulist: "ContentSelectDropdown",
+    datetimepicker: "DateTimePickerPanel",
+    tooltip: "aHTMLTooltip",
+    autoscroll: "true",
+    flex: "1"
+  };
+  var opened = /* @__PURE__ */ new Map();
+  var openedSeq = 0;
+  var OPENED_WAIT = 3e4;
+  function waitingRoom(doc) {
+    let room = doc.getElementById("browsery-opened-windows");
+    if (!room) {
+      room = doc.createElement("div");
+      room.id = "browsery-opened-windows";
+      room.setAttribute("style", "position: fixed; inset: 0; z-index: -1; display: flex; visibility: hidden; pointer-events: none;");
+      (doc.body || doc.documentElement).appendChild(room);
+    }
+    return room;
+  }
+  function stateOfBrowser(browser) {
+    if (!browser) return null;
+    for (const state of registry.values()) if (state.browser === browser) return state;
+    return null;
+  }
+  function parkOpenedWindow(doc, { openWindowInfo, openerBrowser = null, name = "", userContextId = 0 }) {
+    const b = doc.createXULElement("browser");
+    for (const [key2, value] of Object.entries(GUEST_ATTRIBUTES)) b.setAttribute(key2, value);
+    let remoteType = "";
+    try {
+      remoteType = openerBrowser?.remoteType || "";
+    } catch {
+    }
+    b.setAttribute("remoteType", remoteType || lazy.E10SUtils.DEFAULT_REMOTE_TYPE);
+    if (userContextId) b.setAttribute("usercontextid", String(userContextId));
+    if (name) b.setAttribute("name", String(name));
+    b.setAttribute("style", "flex: 1 1 auto; width: 100%; height: 100%; border: 0;");
+    b.openWindowInfo = openWindowInfo;
+    b.getTabBrowser = () => tabBrowserShim(doc);
+    const token = `w${++openedSeq}`;
+    const entry = { browser: b, closed: false };
+    opened.set(token, entry);
+    b.addEventListener("DOMWindowClose", () => {
+      entry.closed = true;
+    });
+    waitingRoom(doc).appendChild(b);
+    doc.defaultView.setTimeout(() => {
+      if (opened.get(token) !== entry) return;
+      opened.delete(token);
+      try {
+        b.remove();
+      } catch {
+      }
+      hooks.log("a window a page opened was never shown as a tab; let go");
+    }, OPENED_WAIT);
+    return { browser: b, token, opener: stateOfBrowser(openerBrowser)?.id || 0 };
+  }
+  function webviewIdOfBrowser(browser) {
+    return stateOfBrowser(browser)?.id || 0;
+  }
+  function dropOpenedWindow(token) {
+    const entry = opened.get(token);
+    if (!entry) return;
+    opened.delete(token);
+    try {
+      entry.browser.remove();
+    } catch {
+    }
+  }
+  function takePage(ours, other) {
+    const win = ours.ownerDocument.defaultView;
+    ours.dispatchEvent(new win.CustomEvent("SwapDocShells", { detail: other }));
+    other.dispatchEvent(new win.CustomEvent("SwapDocShells", { detail: ours }));
+    const fields = [
+      "_webBrowserFind",
+      "_rdmFullZoom",
+      "_remoteWebNavigation",
+      "_remoteFinder",
+      "_documentURI",
+      "_documentContentType",
+      "_characterSet",
+      "_mayEnableCharacterEncodingMenu",
+      "_contentPrincipal",
+      "_contentPartitionedPrincipal",
+      "_isSyntheticDocument",
+      "_originalURI",
+      "_userTypedValue"
+    ];
+    const mine = {};
+    const theirs = {};
+    for (const field of fields) {
+      mine[field] = ours[field];
+      theirs[field] = other[field];
+    }
+    ours.swapFrameLoaders(other);
+    for (const field of fields) {
+      ours[field] = theirs[field];
+      other[field] = mine[field];
+    }
+    try {
+      ours._remoteWebNavigation?.swapBrowser(ours);
+      other._remoteWebNavigation?.swapBrowser(other);
+    } catch {
+    }
+    try {
+      ours._remoteFinder?.swapBrowser(ours);
+      other._remoteFinder?.swapBrowser(other);
+    } catch {
+    }
+    ours.dispatchEvent(new win.CustomEvent("EndSwapDocShells", { detail: other }));
+    other.dispatchEvent(new win.CustomEvent("EndSwapDocShells", { detail: ours }));
+  }
   function attach(el) {
     const state = el.__browsery;
     if (!state || state.browser || !el.isConnected) return;
     const doc = el.ownerDocument;
     const b = doc.createXULElement("browser");
     const src = hooks.rewriteUrl(el.getAttribute("src") || state.pendingSrc || "about:blank");
+    const token = el.getAttribute("adopt") || "";
+    const waiting = token ? opened.get(token) || null : null;
+    if (waiting) opened.delete(token);
     let remoteType = "web";
-    try {
-      remoteType = lazy.E10SUtils.getRemoteTypeForURI(src, true, Services.appinfo.fissionAutostart, lazy.E10SUtils.DEFAULT_REMOTE_TYPE);
-    } catch {
+    if (waiting) remoteType = waiting.browser.getAttribute("remoteType") || remoteType;
+    else {
+      try {
+        remoteType = lazy.E10SUtils.getRemoteTypeForURI(src, true, Services.appinfo.fissionAutostart, lazy.E10SUtils.DEFAULT_REMOTE_TYPE);
+      } catch {
+      }
     }
-    const attributes = {
-      type: "content",
-      remote: "true",
-      maychangeremoteness: "true",
-      messagemanagergroup: "browsers",
-      remoteType,
-      nodefaultsrc: "true",
-      selectmenulist: "ContentSelectDropdown",
-      tooltip: "aHTMLTooltip",
-      autoscroll: "true",
-      flex: "1"
-    };
+    const attributes = { ...GUEST_ATTRIBUTES, remoteType };
     for (const [name, value] of Object.entries(attributes)) b.setAttribute(name, value);
     b.fxrPermissionPrompt = (request) => hooks.onPermissionPrompt(request, state);
     const partition = el.getAttribute("partition") || "";
@@ -4528,18 +4640,21 @@ ${BROWSERY_KNOWLEDGE}`;
     if (state.private) b.setAttribute("usercontextid", String(PRIVATE_CONTEXT_ID));
     const jar = partition.match(/^browsery-jar-(\d{1,4})$/);
     if (jar && Number(jar[1]) >= 20) b.setAttribute("usercontextid", jar[1]);
+    if (waiting) {
+      const context = waiting.browser.getAttribute("usercontextid") || "";
+      if (context) b.setAttribute("usercontextid", context);
+      else b.removeAttribute("usercontextid");
+      state.private = context === String(PRIVATE_CONTEXT_ID);
+      try {
+        const group = waiting.browser.browsingContext?.group?.id;
+        if (group) b.setAttribute("initialBrowsingContextGroupId", String(group));
+      } catch {
+      }
+    }
     b.getTabBrowser = () => tabBrowserShim(doc);
     b.className = "browsery-guest";
     el.appendChild(b);
     state.browser = b;
-    state.id = Number(b.browserId) || ++fallbackId;
-    registry.set(state.id, state);
-    state.listener = progressListener(state);
-    try {
-      b.addProgressListener(state.listener, Ci.nsIWebProgress.NOTIFY_ALL);
-    } catch (error) {
-      hooks.log(`progress listener unavailable: ${error}`);
-    }
     const touch = () => {
       state.lastProgressAt = Date.now();
     };
@@ -4547,15 +4662,68 @@ ${BROWSERY_KNOWLEDGE}`;
     b.addEventListener("BrowseryPageLoaded", (event) => onPageLoaded(state, event.detail));
     b.addEventListener("BrowseryPageLoading", touch);
     b.addEventListener("oop-browser-crashed", () => fire(state, "render-process-gone", { details: { reason: "crashed" } }));
-    state.poller = setInterval(() => poll(state), 500);
-    load(state, src);
+    b.addEventListener("DOMWindowClose", () => fire(state, "close"));
+    const settle = (adopted) => {
+      if (state.browser !== b) return;
+      state.id = Number(b.browserId) || ++fallbackId;
+      registry.set(state.id, state);
+      state.listener = progressListener(state);
+      try {
+        b.addProgressListener(state.listener, Ci.nsIWebProgress.NOTIFY_ALL);
+      } catch (error) {
+        hooks.log(`progress listener unavailable: ${error}`);
+      }
+      state.poller = setInterval(() => poll(state), 500);
+      if (!adopted) {
+        load(state, src);
+        return;
+      }
+      state.requested = src;
+      poll(state);
+      if (waiting.closed) doc.defaultView.setTimeout(() => fire(state, "close"), 0);
+    };
+    if (!waiting) {
+      settle(false);
+      return;
+    }
+    let tries = 0;
+    const adopt = () => {
+      if (state.browser !== b) {
+        try {
+          waiting.browser.remove();
+        } catch {
+        }
+        return;
+      }
+      try {
+        takePage(b, waiting.browser);
+      } catch (error) {
+        if (++tries < 40) {
+          doc.defaultView.setTimeout(adopt, 50);
+          return;
+        }
+        hooks.log(`a window a page opened could not be moved into its tab: ${error}`);
+        try {
+          waiting.browser.remove();
+        } catch {
+        }
+        settle(false);
+        return;
+      }
+      try {
+        waiting.browser.remove();
+      } catch {
+      }
+      settle(true);
+    };
+    adopt();
   }
   function detach(el) {
     const state = el.__browsery;
     if (!state?.browser) return;
     clearInterval(state.poller);
     try {
-      state.browser.removeProgressListener(state.listener);
+      if (state.listener) state.browser.removeProgressListener(state.listener);
     } catch {
     }
     registry.delete(state.id);
@@ -5103,7 +5271,16 @@ Allow only if you trust this site. Browsery never grants device or location acce
       const isPrivate = Boolean(state?.private);
       if (request && typeof request.callID === "string") {
         const { callID, windowID } = request;
-        const actor = () => WindowGlobalParent.getByInnerWindowId(windowID)?.getActor("WebRTC");
+        const actor = () => {
+          try {
+            for (const context of state?.browser?.browsingContext?.getAllBrowsingContextsInSubtree?.() || []) {
+              const page = context.currentWindowGlobal;
+              if (page && page.outerWindowId === windowID) return page.getActor("WebRTC");
+            }
+          } catch {
+          }
+          return null;
+        };
         const deny = () => {
           try {
             actor()?.sendAsyncMessage("webrtc:Deny", { callID, windowID });
@@ -5112,6 +5289,7 @@ Allow only if you trust this site. Browsery never grants device or location acce
         };
         if (request.sharingScreen || request.sharingAudio) {
           deny();
+          emit("browser:notice", { text: "Sharing your screen isn\u2019t in Browsery yet", icon: "info" });
           return;
         }
         let principal = null;
@@ -5299,7 +5477,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!await IOUtils.exists(backup)) return false;
       const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
       const local = await readLocalBuild();
-      if (info && local && true && 202611131858 !== local.build) return false;
+      if (info && local && true && 202611132219 !== local.build) return false;
       await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
       log3?.(`interface update ${info?.toBuild || ""} confirmed`);
       return true;
@@ -6409,6 +6587,12 @@ ${permission}`, { origin, permission, decision: "allow" });
       },
       onShortcut: (callback) => on("browser:shortcut", callback),
       onNewTab: (callback) => on("browser:new-tab", callback),
+      // A page opened a window itself: { token, url, opener, name }. Show it as a tab whose <webview> has adopt={token}.
+      onOpenedWindow: (callback) => on("browser:opened-window", callback),
+      // A page locked the pointer (a game) or let it go: { locked, origin }.
+      onPointerLock: (callback) => on("browser:pointer-lock", callback),
+      // Something the person should be told in a line: { text, icon }.
+      onNotice: (callback) => on("browser:notice", callback),
       onContextAction: (callback) => on("browser:context-action", callback),
       onReopenClosedTab: (callback) => on("browser:reopen-closed", callback),
       async rememberClosedTab(tab) {
@@ -6747,7 +6931,7 @@ ${permission}`, { origin, permission, decision: "allow" });
 
   // browsery-gecko/platform/chrome-helpers.js
   init_globals();
-  function installChromeHelpers(win, { emit, log: log3, aiMenu = true, extraItems = null }) {
+  function installChromeHelpers(win, { emit, log: log3, aiMenu = true, extraItems = null, onPagePrint = null }) {
     const doc = win.document;
     const popupset = doc.createXULElement("popupset");
     popupset.id = "mainPopupSet";
@@ -6766,11 +6950,55 @@ ${permission}`, { origin, permission, decision: "allow" });
     menulist.appendChild(selectPopup);
     const contextMenu = doc.createXULElement("menupopup");
     contextMenu.id = "browsery-context-menu";
-    popupset.append(tooltip, remoteTooltip, menulist, contextMenu);
+    const datePicker = doc.createXULElement("panel");
+    datePicker.id = "DateTimePickerPanel";
+    for (const [name, value] of Object.entries({ type: "arrow", orient: "vertical", noautofocus: "true", norolluponanchor: "true", consumeoutsideclicks: "never", level: "parent", tabspecific: "true" })) datePicker.setAttribute(name, value);
+    popupset.append(tooltip, remoteTooltip, menulist, contextMenu, datePicker);
     doc.body.appendChild(popupset);
+    win.PointerLock = {
+      entered: (origin) => {
+        try {
+          emit("browser:pointer-lock", { locked: true, origin: String(origin || "") });
+        } catch {
+        }
+      },
+      exited: () => {
+        try {
+          emit("browser:pointer-lock", { locked: false });
+        } catch {
+        }
+      }
+    };
     const openAsTab = (uri) => {
       if (uri?.spec && /^(?:https?|file|about|data|blob):/i.test(uri.spec)) emit("browser:new-tab", uri.spec);
       return null;
+    };
+    const NEW_TAB = new Set([Ci.nsIBrowserDOMWindow.OPEN_NEWTAB, Ci.nsIBrowserDOMWindow.OPEN_NEWTAB_BACKGROUND, Ci.nsIBrowserDOMWindow.OPEN_NEWTAB_FOREGROUND].filter((value) => value !== void 0));
+    const openWindowFor = (uri, params, where, flags, name) => {
+      try {
+        if (where === Ci.nsIBrowserDOMWindow.OPEN_PRINT_BROWSER) {
+          const id = params?.openWindowInfo?.isForWindowDotPrint ? webviewIdOfBrowser(params.openerBrowser) : 0;
+          if (id && onPagePrint) win.setTimeout(() => {
+            try {
+              onPagePrint(id);
+            } catch (error) {
+              log3(`print asked by a page: ${error}`);
+            }
+          }, 0);
+          return null;
+        }
+        if (!params?.openWindowInfo || !NEW_TAB.has(where)) return openAsTab(uri);
+        const parked = parkOpenedWindow(doc, { openWindowInfo: params.openWindowInfo, openerBrowser: params.openerBrowser, name, userContextId: params.openerOriginAttributes?.userContextId || 0 });
+        const url = uri?.spec && /^(?:https?|file|data|blob):/i.test(uri.spec) ? uri.spec : "";
+        if (!emit("browser:opened-window", { token: parked.token, url, opener: parked.opener, name: String(name || "") })) {
+          dropOpenedWindow(parked.token);
+          return openAsTab(uri);
+        }
+        return parked.browser;
+      } catch (error) {
+        log3(`opening a window for a page: ${error}`);
+        return openAsTab(uri);
+      }
     };
     try {
       win.browserDOMWindow = {
@@ -6778,7 +7006,7 @@ ${permission}`, { origin, permission, decision: "allow" });
         openURI: (uri) => openAsTab(uri),
         createContentWindow: (uri) => openAsTab(uri),
         openURIInFrame: (uri) => openAsTab(uri),
-        createContentWindowInFrame: (uri) => openAsTab(uri),
+        createContentWindowInFrame: (uri, params, where, flags, name) => openWindowFor(uri, params, where, flags, name),
         canClose: () => true,
         get tabCount() {
           return 1;
@@ -7847,34 +8075,60 @@ ${permission}`, { origin, permission, decision: "allow" });
       } catch {
       }
     }
+    const WINDOWS = Services.appinfo.OS === "WINNT";
     const LOCAL = () => Services.dirsvc.get("LocalAppData", Ci.nsIFile).path;
     const ROAMING = () => Services.dirsvc.get("AppData", Ci.nsIFile).path;
-    const CHROMIUM = () => ({
+    const HOME = () => Services.dirsvc.get("Home", Ci.nsIFile).path;
+    const CONFIG = () => Services.env.get("XDG_CONFIG_HOME") || PathUtils.join(HOME(), ".config");
+    const CHROMIUM = () => WINDOWS ? {
       chrome: ["Google Chrome", PathUtils.join(LOCAL(), "Google", "Chrome", "User Data")],
       edge: ["Microsoft Edge", PathUtils.join(LOCAL(), "Microsoft", "Edge", "User Data")],
       brave: ["Brave", PathUtils.join(LOCAL(), "BraveSoftware", "Brave-Browser", "User Data")],
+      opera: ["Opera", PathUtils.join(ROAMING(), "Opera Software", "Opera Stable")],
+      operagx: ["Opera GX", PathUtils.join(ROAMING(), "Opera Software", "Opera GX Stable")],
       vivaldi: ["Vivaldi", PathUtils.join(LOCAL(), "Vivaldi", "User Data")],
-      opera: ["Opera", PathUtils.join(ROAMING(), "Opera Software", "Opera Stable")]
-    });
+      yandex: ["Yandex Browser", PathUtils.join(LOCAL(), "Yandex", "YandexBrowser", "User Data")]
+    } : {
+      chrome: ["Google Chrome", PathUtils.join(CONFIG(), "google-chrome")],
+      chromium: ["Chromium", PathUtils.join(CONFIG(), "chromium")],
+      edge: ["Microsoft Edge", PathUtils.join(CONFIG(), "microsoft-edge")],
+      brave: ["Brave", PathUtils.join(CONFIG(), "BraveSoftware", "Brave-Browser")],
+      opera: ["Opera", PathUtils.join(CONFIG(), "opera")],
+      vivaldi: ["Vivaldi", PathUtils.join(CONFIG(), "vivaldi")]
+    };
     async function chromiumProfile(root) {
-      for (const name of ["Default", "Profile 1", ""]) {
-        const dir = name ? PathUtils.join(root, name) : root;
-        if (await IOUtils.exists(PathUtils.join(dir, "Bookmarks")) || await IOUtils.exists(PathUtils.join(dir, "History"))) return dir;
+      const has = async (dir) => await IOUtils.exists(PathUtils.join(dir, "Bookmarks")) || await IOUtils.exists(PathUtils.join(dir, "History"));
+      try {
+        const last = JSON.parse(await IOUtils.readUTF8(PathUtils.join(root, "Local State")))?.profile?.last_used;
+        if (typeof last === "string" && /^[\w .-]{1,60}$/.test(last) && !last.includes("..") && await has(PathUtils.join(root, last))) return PathUtils.join(root, last);
+      } catch {
       }
-      return null;
+      for (const name of ["Default", "Profile 1"]) {
+        const dir = PathUtils.join(root, name);
+        if (await has(dir)) return dir;
+      }
+      try {
+        for (const child of (await IOUtils.getChildren(root)).sort()) {
+          if (/^Profile \d+$/.test(PathUtils.filename(child)) && await has(child)) return child;
+        }
+      } catch {
+      }
+      return await has(root) ? root : null;
     }
     async function firefoxProfile() {
-      const root = PathUtils.join(ROAMING(), "Mozilla", "Firefox");
-      try {
-        const ini = await IOUtils.readUTF8(PathUtils.join(root, "profiles.ini"));
-        const install = ini.match(/\[Install[^\]]*\][^[]*?Default=([^\r\n]+)/);
-        const relative = install?.[1] || ini.match(/Path=([^\r\n]*default-release[^\r\n]*)/)?.[1] || ini.match(/Path=([^\r\n]+)/)?.[1];
-        if (!relative) return null;
-        const dir = /^[A-Za-z]:|^\//.test(relative) ? relative : PathUtils.join(root, ...relative.split("/"));
-        return await IOUtils.exists(PathUtils.join(dir, "places.sqlite")) ? dir : null;
-      } catch {
-        return null;
+      const roots = WINDOWS ? [PathUtils.join(ROAMING(), "Mozilla", "Firefox")] : [PathUtils.join(HOME(), ".mozilla", "firefox"), PathUtils.join(HOME(), "snap", "firefox", "common", ".mozilla", "firefox"), PathUtils.join(HOME(), ".var", "app", "org.mozilla.firefox", ".mozilla", "firefox")];
+      for (const root of roots) {
+        try {
+          const ini = await IOUtils.readUTF8(PathUtils.join(root, "profiles.ini"));
+          const install = ini.match(/\[Install[^\]]*\][^[]*?Default=([^\r\n]+)/);
+          const relative = install?.[1] || ini.match(/Path=([^\r\n]*default-release[^\r\n]*)/)?.[1] || ini.match(/Path=([^\r\n]+)/)?.[1];
+          if (!relative) continue;
+          const dir = /^[A-Za-z]:|^\//.test(relative) ? relative : PathUtils.join(root, ...relative.split("/"));
+          if (await IOUtils.exists(PathUtils.join(dir, "places.sqlite"))) return dir;
+        } catch {
+        }
       }
+      return null;
     }
     async function arcFolder() {
       const forced = Services.env.get("BROWSERY_ARC_DIR");
@@ -7889,16 +8143,27 @@ ${permission}`, { origin, permission, decision: "allow" });
       }
       return null;
     }
+    const usedAt = async (file) => {
+      try {
+        return (await IOUtils.stat(file)).lastModified || 0;
+      } catch {
+        return 0;
+      }
+    };
     async function importSources() {
       const out = [];
       if (await arcFolder()) out.push({ id: "arc", label: "Arc" });
+      let browsers = {};
       try {
-        for (const [id, [label, root]] of Object.entries(CHROMIUM())) {
-          if (await chromiumProfile(root).catch(() => null)) out.push({ id, label });
-        }
+        browsers = CHROMIUM();
       } catch {
       }
-      if (await firefoxProfile().catch(() => null)) out.push({ id: "firefox", label: "Firefox" });
+      for (const [id, [label, root]] of Object.entries(browsers)) {
+        const dir = await chromiumProfile(root).catch(() => null);
+        if (dir) out.push({ id, label, used: await usedAt(PathUtils.join(dir, "History")) });
+      }
+      const firefox = await firefoxProfile().catch(() => null);
+      if (firefox) out.push({ id: "firefox", label: "Firefox", used: await usedAt(PathUtils.join(firefox, "places.sqlite")) });
       return out;
     }
     async function readDb(file, sql, params = {}) {
@@ -7975,12 +8240,13 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!dir) throw new Error(`${entry[0]} profile not found.`);
       if (bookmarks && await IOUtils.exists(PathUtils.join(dir, "Bookmarks"))) {
         const data = JSON.parse(await IOUtils.readUTF8(PathUtils.join(dir, "Bookmarks")));
-        const walk = (node, folder) => {
-          if (!node) return;
+        const walk = (node, folder, top = false) => {
+          if (!node || typeof node !== "object") return;
           if (node.type === "url" && /^https?:/i.test(node.url || "")) result.bookmarks.push({ url: node.url, title: node.name || "", folder, addedAt: node.date_added ? fromChromeTime(node.date_added) : Date.now() });
-          for (const child of node.children || []) walk(child, node.type === "folder" && node.name && !["Bookmarks bar", "Other bookmarks", "Favorites bar"].includes(node.name) ? node.name : folder);
+          const inside = !top && node.type === "folder" && node.name ? node.name : folder;
+          for (const child of node.children || []) walk(child, inside);
         };
-        for (const root of Object.values(data.roots || {})) walk(root, "");
+        for (const root of Object.values(data.roots || {})) walk(root, "", true);
       }
       if (history && await IOUtils.exists(PathUtils.join(dir, "History"))) result.history = await chromiumHistory(dir);
       return result;
@@ -10765,7 +11031,7 @@ ${error?.stack || ""}`);
         parent: { esModuleURI: "resource://browsery/actors/BrowseryPageParent.sys.mjs" },
         child: {
           esModuleURI: "resource://browsery/actors/BrowseryPageChild.sys.mjs",
-          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {}, load: { capture: true } }
+          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {}, load: { capture: true }, MozInvalidForm: {} }
         },
         allFrames: true,
         messageManagerGroups: ["browsers"]
@@ -10812,7 +11078,7 @@ ${error?.stack || ""}`);
       } catch {
       }
       try {
-        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131858 });
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611132219 });
       } catch {
       }
       win.addEventListener("unload", () => {
@@ -10844,10 +11110,21 @@ ${error?.stack || ""}`);
       const value = String(text).replace(/\s+/g, " ").trim();
       return value.length > 24 ? `${value.slice(0, 23)}\u2026` : value;
     };
+    let pagePrinting = false;
     installChromeHelpers(win, {
       emit: bridge.emit,
       log: log2,
       aiMenu: false,
+      // A page's own Print button (window.print()): print that tab, as Ctrl P does.
+      // One at a time: a page that keeps calling it does not stack up print dialogs.
+      onPagePrint: (id) => {
+        if (pagePrinting) return;
+        pagePrinting = true;
+        log2("a page asked to print");
+        Promise.resolve(tools.printTab(id)).finally(() => win.setTimeout(() => {
+          pagePrinting = false;
+        }, 1500));
+      },
       extraItems: ({ link, selection, editable, pageUrl }) => {
         const items = [];
         if (link) {
@@ -10939,7 +11216,7 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
-      build: 202611131858,
+      build: 202611132219,
       // The interface calls this once it is on screen: an update that just went in is
       // kept (shell/guard.js would otherwise put the previous files back), and files
       // no build lists any more are cleared out a little later.
@@ -10993,7 +11270,7 @@ ${error?.stack || ""}`);
         } catch {
         }
         return [
-          `Browsery ${"2.1.0"} (build ${202611131858})`,
+          `Browsery ${"2.1.0"} (build ${202611132219})`,
           `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
           `Graphics: ${renderer || "unknown"}`,
           `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
@@ -11081,8 +11358,8 @@ ${error?.stack || ""}`);
           main.focus();
           return { ok: true };
         }
-        const opened = Services.ww.openWindow(null, SHELL, "_blank", "chrome,dialog=no,all", null);
-        (opened.__browseryPendingUrls = opened.__browseryPendingUrls || []).push(String(url));
+        const opened2 = Services.ww.openWindow(null, SHELL, "_blank", "chrome,dialog=no,all", null);
+        (opened2.__browseryPendingUrls = opened2.__browseryPendingUrls || []).push(String(url));
         return { ok: true };
       }
     });

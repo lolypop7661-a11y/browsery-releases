@@ -46,6 +46,13 @@ export class BrowseryPageParent extends JSWindowActorParent {
         browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent(name, { detail: { url, ...point }, bubbles: true }));
         return undefined;
       }
+      case 'Browsery:Invalid': {
+        // A form field's own message ("Please fill out this field."), from any frame of the tab.
+        if (!browser?.ownerDocument) return undefined;
+        const text = String(message.data?.message || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+        if (text) browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-invalid', { detail: { message: text }, bubbles: true }));
+        return undefined;
+      }
       case 'Browsery:Gesture': {
         if (!browser?.ownerDocument || this.browsingContext?.parent) return undefined;
         const dir = String(message.data?.dir || '');
