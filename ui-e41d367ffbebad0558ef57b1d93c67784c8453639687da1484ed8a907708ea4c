@@ -42,7 +42,7 @@
   ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // browsery-gecko/platform/shims/buffer.js
+  // ../browsery-gecko/platform/shims/buffer.js
   function toBase64(bytes) {
     let binary = "";
     for (let i = 0; i < bytes.length; i += 32768) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
@@ -57,7 +57,7 @@
   }
   var encoder, decoder, Buffer2;
   var init_buffer = __esm({
-    "browsery-gecko/platform/shims/buffer.js"() {
+    "../browsery-gecko/platform/shims/buffer.js"() {
       init_globals();
       encoder = new TextEncoder();
       decoder = new TextDecoder();
@@ -126,10 +126,10 @@
     }
   });
 
-  // browsery-gecko/platform/shims/globals.js
+  // ../browsery-gecko/platform/shims/globals.js
   var platform, process;
   var init_globals = __esm({
-    "browsery-gecko/platform/shims/globals.js"() {
+    "../browsery-gecko/platform/shims/globals.js"() {
       init_buffer();
       platform = (() => {
         try {
@@ -149,7 +149,7 @@
     }
   });
 
-  // browsery-gecko/platform/shims/fs.js
+  // ../browsery-gecko/platform/shims/fs.js
   var fs_exports = {};
   __export(fs_exports, {
     BUNDLED_ROOT: () => BUNDLED_ROOT,
@@ -237,7 +237,7 @@
   }
   var DATA_ROOT, BUNDLED_ROOT, files, bundled, realDir, pending, enoent, eexist, nameOf, isData, persist, fs_default;
   var init_fs = __esm({
-    "browsery-gecko/platform/shims/fs.js"() {
+    "../browsery-gecko/platform/shims/fs.js"() {
       init_globals();
       init_buffer();
       DATA_ROOT = "/browsery-data";
@@ -259,7 +259,7 @@
     }
   });
 
-  // browsery-gecko/platform/shims/path.js
+  // ../browsery-gecko/platform/shims/path.js
   var path_exports = {};
   __export(path_exports, {
     basename: () => basename,
@@ -275,7 +275,7 @@
   });
   var normalize, sep, join, resolve, dirname, basename, extname, isAbsolute, posix, path_default;
   var init_path = __esm({
-    "browsery-gecko/platform/shims/path.js"() {
+    "../browsery-gecko/platform/shims/path.js"() {
       init_globals();
       normalize = (value) => {
         const absolute = String(value).startsWith("/");
@@ -310,7 +310,7 @@
     }
   });
 
-  // browsery-gecko/platform/shims/scrypt.js
+  // ../browsery-gecko/platform/shims/scrypt.js
   function sha256(data) {
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
     const length = bytes.length;
@@ -472,7 +472,7 @@
   }
   var K;
   var init_scrypt = __esm({
-    "browsery-gecko/platform/shims/scrypt.js"() {
+    "../browsery-gecko/platform/shims/scrypt.js"() {
       init_globals();
       K = new Uint32Array([
         1116352408,
@@ -543,7 +543,7 @@
     }
   });
 
-  // browsery-gecko/platform/shims/crypto.js
+  // ../browsery-gecko/platform/shims/crypto.js
   var crypto_exports = {};
   __export(crypto_exports, {
     default: () => crypto_default,
@@ -575,7 +575,7 @@ ${error?.stack || ""}
   }
   var randomUUID, randomBytes, crypto_default;
   var init_crypto = __esm({
-    "browsery-gecko/platform/shims/crypto.js"() {
+    "../browsery-gecko/platform/shims/crypto.js"() {
       init_globals();
       init_buffer();
       init_scrypt();
@@ -585,9 +585,9 @@ ${error?.stack || ""}
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/local-account.cjs
+  // ../Browsery-windows-build-1.0.15/electron/local-account.cjs
   var require_local_account = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -810,7 +810,7 @@ ${error?.stack || ""}
     }
   });
 
-  // browsery-gecko/platform/shims/os.js
+  // ../browsery-gecko/platform/shims/os.js
   var os_exports = {};
   __export(os_exports, {
     EOL: () => EOL,
@@ -823,7 +823,7 @@ ${error?.stack || ""}
   });
   var hostname, platform2, homedir, freemem, totalmem, EOL, os_default;
   var init_os = __esm({
-    "browsery-gecko/platform/shims/os.js"() {
+    "../browsery-gecko/platform/shims/os.js"() {
       init_globals();
       hostname = () => {
         try {
@@ -847,9 +847,9 @@ ${error?.stack || ""}
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/account-server.cjs
+  // ../Browsery-windows-build-1.0.15/electron/account-server.cjs
   var require_account_server = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -976,7 +976,7 @@ ${error?.stack || ""}
     }
   });
 
-  // browsery-gecko/platform/shims/url.js
+  // ../browsery-gecko/platform/shims/url.js
   var url_exports = {};
   __export(url_exports, {
     URL_: () => URL_,
@@ -992,16 +992,16 @@ ${error?.stack || ""}
   }
   var URL_, url_default;
   var init_url = __esm({
-    "browsery-gecko/platform/shims/url.js"() {
+    "../browsery-gecko/platform/shims/url.js"() {
       init_globals();
       URL_ = URL;
       url_default = { domainToASCII, URL };
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/surrogates.cjs
+  // ../Browsery-windows-build-1.0.15/electron/surrogates.cjs
   var require_surrogates = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
       init_globals();
       var SURROGATES2 = {
         // Google Publisher Tag (gpt.js)
@@ -1112,9 +1112,9 @@ var inst=new Detector();
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/adblocker.cjs
+  // ../Browsery-windows-build-1.0.15/electron/adblocker.cjs
   var require_adblocker = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
       "use strict";
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -1840,9 +1840,9 @@ var inst=new Detector();
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
+  // ../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
   var require_link_cleaner = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
       init_globals();
       var TRACKING_PARAMS = /* @__PURE__ */ new Set(["fbclid", "gclid", "gclsrc", "dclid", "gbraid", "wbraid", "gad_source", "msclkid", "yclid", "twclid", "ttclid", "li_fat_id", "igshid", "igsh", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "__hssc", "__hstc", "__hsfp", "hsctatracking", "mkt_tok", "oly_anon_id", "oly_enc_id", "vero_id", "vero_conv", "wickedid", "rb_clickid", "s_cid", "srsltid", "epik", "_openstat", "ml_subscriber", "ml_subscriber_hash", "ck_subscriber_id", "spm", "scm", "_gl", "trk", "trkCampaign", "sc_campaign", "sc_channel", "sc_content", "sc_medium", "sc_outcome", "sc_geo", "sc_country"]);
       var SITE_TRACKING_PARAMS = [
@@ -1886,7 +1886,7 @@ var inst=new Detector();
     }
   });
 
-  // browsery-gecko/platform/shims/electron.js
+  // ../browsery-gecko/platform/shims/electron.js
   var electron_exports = {};
   __export(electron_exports, {
     app: () => app,
@@ -1942,7 +1942,7 @@ var inst=new Detector();
   }
   var KEY_FILE, key, osProtected, randomKey, safeStorage, app, clipboardHelper, clipboard, electron_default;
   var init_electron = __esm({
-    "browsery-gecko/platform/shims/electron.js"() {
+    "../browsery-gecko/platform/shims/electron.js"() {
       init_globals();
       init_buffer();
       init_fs();
@@ -2021,7 +2021,7 @@ var inst=new Detector();
     }
   });
 
-  // browsery-gecko/platform/shims/util.js
+  // ../browsery-gecko/platform/shims/util.js
   var util_exports = {};
   __export(util_exports, {
     TextDecoder: () => TextDecoderImpl,
@@ -2030,7 +2030,7 @@ var inst=new Detector();
   });
   var TextDecoderImpl, TextEncoderImpl, util_default;
   var init_util = __esm({
-    "browsery-gecko/platform/shims/util.js"() {
+    "../browsery-gecko/platform/shims/util.js"() {
       init_globals();
       TextDecoderImpl = globalThis.TextDecoder;
       TextEncoderImpl = globalThis.TextEncoder;
@@ -2038,9 +2038,9 @@ var inst=new Detector();
     }
   });
 
-  // Browsery-windows-build-1.0.15/package.json
+  // ../Browsery-windows-build-1.0.15/package.json
   var require_package = __commonJS({
-    "Browsery-windows-build-1.0.15/package.json"(exports, module) {
+    "../Browsery-windows-build-1.0.15/package.json"(exports, module) {
       module.exports = {
         name: "browsery-magic-cursor",
         productName: "Browsery",
@@ -2135,9 +2135,9 @@ var inst=new Detector();
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
+  // ../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
   var require_browsery_knowledge = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
       "use strict";
       init_globals();
       var packageVersion = "";
@@ -2491,9 +2491,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/ai-overview.cjs
+  // ../Browsery-windows-build-1.0.15/electron/ai-overview.cjs
   var require_ai_overview = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -3044,9 +3044,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/credentials.cjs
+  // ../Browsery-windows-build-1.0.15/electron/credentials.cjs
   var require_credentials = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2, clipboard: clipboard2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -3245,9 +3245,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/global-control.cjs
+  // ../Browsery-windows-build-1.0.15/electron/global-control.cjs
   var require_global_control = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -3657,9 +3657,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // Browsery-windows-build-1.0.15/electron/browsery-search.cjs
+  // ../Browsery-windows-build-1.0.15/electron/browsery-search.cjs
   var require_browsery_search = __commonJS({
-    "Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
+    "../Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
       init_globals();
       var path = (init_path(), __toCommonJS(path_exports));
       var { randomUUID: randomUUID2 } = (init_crypto(), __toCommonJS(crypto_exports));
@@ -4254,10 +4254,10 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // browsery-v2/platform/index.js
+  // platform/index.js
   init_globals();
 
-  // browsery-gecko/platform/webview.js
+  // ../browsery-gecko/platform/webview.js
   init_globals();
   var lazy = {};
   ChromeUtils.defineESModuleGetters(lazy, {
@@ -4297,6 +4297,9 @@ ${BROWSERY_KNOWLEDGE}`;
   }
   function webviewById(id) {
     return registry.get(Number(id)) || null;
+  }
+  function allWebviews() {
+    return [...registry.values()];
   }
   var privateContextId = PRIVATE_CONTEXT_ID;
   var ABORTED = /* @__PURE__ */ new Set([Cr.NS_BINDING_ABORTED, Cr.NS_BINDING_RETARGETED, Cr.NS_BINDING_REDIRECTED, Cr.NS_ERROR_ABORT]);
@@ -4771,7 +4774,7 @@ ${BROWSERY_KNOWLEDGE}`;
     }).observe(doc.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["src"] });
   }
 
-  // browsery-gecko/platform/bridge.js
+  // ../browsery-gecko/platform/bridge.js
   init_globals();
   init_fs();
   init_buffer();
@@ -4783,7 +4786,7 @@ ${BROWSERY_KNOWLEDGE}`;
   var import_ai_overview = __toESM(require_ai_overview());
   var import_credentials = __toESM(require_credentials());
 
-  // Browsery-windows-build-1.0.15/electron/adblock-rules.json
+  // ../Browsery-windows-build-1.0.15/electron/adblock-rules.json
   var adblock_rules_default = {
     version: "2026.10.13.1",
     updatedAt: 17918496e5,
@@ -4999,10 +5002,10 @@ ${BROWSERY_KNOWLEDGE}`;
     ]
   };
 
-  // browsery-gecko/platform/bridge.js
+  // ../browsery-gecko/platform/bridge.js
   var import_global_control = __toESM(require_global_control());
 
-  // Browsery-windows-build-1.0.15/electron/global-control-config.json
+  // ../Browsery-windows-build-1.0.15/electron/global-control-config.json
   var global_control_config_default = {
     supabaseUrl: "https://lnowharqxuxnudntqkxc.supabase.co",
     supabaseAnonKey: "sb_publishable_55ywwCbGEGX7U_7sULQkRA_aijy28qY",
@@ -5010,10 +5013,10 @@ ${BROWSERY_KNOWLEDGE}`;
     captchaHost: "lolypop7661-a11y.github.io"
   };
 
-  // browsery-gecko/platform/bridge.js
+  // ../browsery-gecko/platform/bridge.js
   init_electron();
 
-  // browsery-gecko/platform/permissions.js
+  // ../browsery-gecko/platform/permissions.js
   init_globals();
   var LABELS = {
     media: "camera or microphone",
@@ -5188,7 +5191,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-gecko/platform/updater.js
+  // ../browsery-gecko/platform/updater.js
   init_globals();
   var lazy2 = {};
   ChromeUtils.defineESModuleGetters(lazy2, {
@@ -5296,7 +5299,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!await IOUtils.exists(backup)) return false;
       const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
       const local = await readLocalBuild();
-      if (info && local && true && 202611131536 !== local.build) return false;
+      if (info && local && true && 202611131704 !== local.build) return false;
       await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
       log3?.(`interface update ${info?.toBuild || ""} confirmed`);
       return true;
@@ -5726,7 +5729,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-gecko/platform/search-pages.js
+  // ../browsery-gecko/platform/search-pages.js
   init_globals();
   var import_browsery_search = __toESM(require_browsery_search());
   var SEARCH_ADDRESS = /^browsery:\/\/search\/?(\?[^#]*)?(#.*)?$/i;
@@ -5801,7 +5804,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { rewrite, call };
   }
 
-  // browsery-gecko/platform/bridge.js
+  // ../browsery-gecko/platform/bridge.js
   var lazy3 = {};
   ChromeUtils.defineESModuleGetters(lazy3, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs",
@@ -6742,7 +6745,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { desktop, init, emit, on, flush, prefs: () => prefs, accounts: () => localAccount, protection: () => adblocker };
   }
 
-  // browsery-gecko/platform/chrome-helpers.js
+  // ../browsery-gecko/platform/chrome-helpers.js
   init_globals();
   function installChromeHelpers(win, { emit, log: log3, aiMenu = true, extraItems = null }) {
     const doc = win.document;
@@ -7145,7 +7148,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     }, { capture: true, passive: true });
   }
 
-  // browsery-gecko/platform/storage.js
+  // ../browsery-gecko/platform/storage.js
   init_globals();
   init_fs();
   var MemoryStorage = class {
@@ -7205,7 +7208,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return local;
   }
 
-  // browsery-gecko/platform/diagnostics.js
+  // ../browsery-gecko/platform/diagnostics.js
   init_globals();
   var MAX_LOG_BYTES = 768 * 1024;
   function probeDir() {
@@ -7296,15 +7299,67 @@ ${permission}`, { origin, permission, decision: "allow" });
     });
     win.addEventListener("error", (event) => write(`window error: ${event.message} @ ${String(event.filename || "").replace(/^.*\//, "")}:${event.lineno}`));
     win.addEventListener("unhandledrejection", (event) => write(`unhandled rejection: ${event.reason?.stack || event.reason}`));
-    let expected = Date.now() + 1e3;
+    const stalls = { count: 0, longest: 0, background: 0 };
+    let expected = win.performance.now() + 1e3;
     win.setInterval(() => {
-      const now = Date.now();
+      const now = win.performance.now();
       const lag = now - expected;
-      if (lag > 1500) write(`window was unresponsive for ${(lag / 1e3).toFixed(1)}s`);
       expected = now + 1e3;
+      if (lag <= 1500 || lag > 12e4) return;
+      let away = false;
+      try {
+        away = win.document.hidden || !win.document.hasFocus();
+      } catch {
+      }
+      stalls.count += 1;
+      stalls.longest = Math.max(stalls.longest, lag);
+      if (away) stalls.background += 1;
+      write(`window was unresponsive for ${(lag / 1e3).toFixed(1)}s${away ? " (in the background)" : ""}`);
+      if (!away) recorder.freeze(lag);
     }, 1e3);
+    const recorder = {
+      state: "off",
+      freeze(lag) {
+        if (this.state === "off" && stalls.count - stalls.background >= 3) this.start();
+        else if (this.state === "running" && lag >= 2e3) this.save(lag);
+      },
+      start() {
+        this.state = "starting";
+        try {
+          Promise.resolve(Services.profiler.StartProfiler(1 << 20, 2, ["js", "stackwalk", "cpu"], [`pid:${Services.appinfo.processID}`])).then(() => {
+            this.state = "running";
+            write("the window keeps freezing: recording what holds it up until the next freeze");
+          }, () => {
+            this.state = "unavailable";
+          });
+        } catch {
+          this.state = "unavailable";
+        }
+      },
+      async save(lag) {
+        this.state = "saving";
+        const endedAt = win.performance.timeOrigin + win.performance.now();
+        try {
+          const data = await Services.profiler.getProfileDataAsync();
+          delete data.pages;
+          for (const thread of data.threads || []) delete thread.markers;
+          data.meta = { ...data.meta, browsery: { freezeMs: Math.round(lag), endedAt } };
+          const file = PathUtils.join(PathUtils.parent(target), "freeze-profile.jsonlz4");
+          await IOUtils.writeJSON(file, data, { compress: true });
+          write(`saved what held the window up for ${(lag / 1e3).toFixed(1)}s in logs/freeze-profile.jsonlz4`);
+          this.state = "saved";
+        } catch (error) {
+          this.state = "unavailable";
+          write(`could not save the freeze recording: ${error}`);
+        }
+        try {
+          Services.profiler.StopProfiler();
+        } catch {
+        }
+      }
+    };
     if (probe) installProbe(win, { write, flush: flush2, dir: probe });
-    return { write, open, flush: flush2 };
+    return { write, open, flush: flush2, stalls: () => ({ ...stalls }) };
   }
   function describe(node) {
     if (!node || !node.tagName) return String(node?.nodeName || node);
@@ -7354,7 +7409,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     win.setInterval(report, 1e3);
   }
 
-  // browsery-v2/platform/google.js
+  // platform/google.js
   init_globals();
   var SESSION_COOKIES = /* @__PURE__ */ new Set(["SID", "__Secure-1PSID", "__Secure-3PSID", "SAPISID", "__Secure-1PAPISID"]);
   var GOOGLE_DOMAINS = ["google.com", "youtube.com", "gmail.com", "googleusercontent.com", "google.co.uk", "google.de"];
@@ -7449,7 +7504,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/tools.js
+  // platform/tools.js
   init_globals();
   var import_credentials2 = __toESM(require_credentials());
   var import_ai_overview2 = __toESM(require_ai_overview());
@@ -8023,15 +8078,15 @@ ${permission}`, { origin, permission, decision: "allow" });
       });
     };
     async function vaultKey() {
-      const PREF = "browsery.vault.key";
-      const sealed = Services.prefs.getStringPref(PREF, "");
+      const PREF2 = "browsery.vault.key";
+      const sealed = Services.prefs.getStringPref(PREF2, "");
       if (sealed) return lazy4.OSKeyStore.decrypt(sealed, false);
       const bytes = new Uint8Array(32);
       win.crypto.getRandomValues(bytes);
       const raw = win.btoa(String.fromCharCode(...bytes));
       const stored = await lazy4.OSKeyStore.encrypt(raw);
       if (await lazy4.OSKeyStore.decrypt(stored, false) !== raw) throw new Error("key check failed");
-      Services.prefs.setStringPref(PREF, stored);
+      Services.prefs.setStringPref(PREF2, stored);
       return raw;
     }
     async function vaultUnlock(reason) {
@@ -8170,7 +8225,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/extensions.js
+  // platform/extensions.js
   init_globals();
   var AMO = "https://addons.mozilla.org/api/v5/addons";
   var AUDIT_KEY = "browsery:extensions-audit";
@@ -8584,7 +8639,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/notifications.js
+  // platform/notifications.js
   init_globals();
   function installPopupNotifications(win, { emit, on, log: log3 }) {
     const active = /* @__PURE__ */ new Map();
@@ -8669,7 +8724,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/family.js
+  // platform/family.js
   init_globals();
   function hostMatches(host, rule) {
     const h = String(host || "").toLowerCase().replace(/^www\./, "");
@@ -8778,7 +8833,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/apps.js
+  // platform/apps.js
   init_globals();
   var APPS_KEY = "browsery:apps";
   function createApps(win, { log: log3 }) {
@@ -8964,7 +9019,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/privacy.js
+  // platform/privacy.js
   init_globals();
   var COMPANIES = [
     ["Google", /(^|\.)(google-analytics|googletagmanager|googlesyndication|googleadservices|doubleclick|2mdn|googletagservices|gstatic|google)\.(com|net)$/],
@@ -9227,7 +9282,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/downloadsx.js
+  // platform/downloadsx.js
   init_globals();
   var lazy6 = {};
   ChromeUtils.defineESModuleGetters(lazy6, {
@@ -9269,20 +9324,20 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/shield.js
+  // platform/shield.js
   init_globals();
 
-  // browsery-v2/platform/shield-engine.js
+  // platform/shield-engine.js
   init_globals();
 
-  // browsery-v2/platform/shield-signatures.js
+  // platform/shield-signatures.js
   init_globals();
   var SIGNATURES = {
     // the EICAR antivirus test file (harmless; every scanner is expected to flag it)
     "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f": "EICAR-Test-File (not a virus)"
   };
 
-  // browsery-v2/platform/shield-engine.js
+  // platform/shield-engine.js
   var RISKY_EXT = /\.(exe|msi|msix|appx|bat|cmd|com|scr|pif|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|lnk|reg|jar|dll|cpl|iso|img|vhd|vhdx|docm|xlsm|pptm|one|url|scf|chm)$/i;
   var PROGRAM_EXT = /\.(exe|scr|com|pif|dll|cpl|msi|sys)$/i;
   var SCRIPT_EXT = /\.(bat|cmd|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|reg|url|scf|sh)$/i;
@@ -9508,7 +9563,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { verdict, score, threat, findings };
   }
 
-  // browsery-v2/platform/shield.js
+  // platform/shield.js
   var lazy7 = {};
   ChromeUtils.defineESModuleGetters(lazy7, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs"
@@ -9714,7 +9769,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // browsery-v2/platform/selftest.js
+  // platform/selftest.js
   init_globals();
   function selfTestDir() {
     try {
@@ -10124,7 +10179,7 @@ ${error?.stack || ""}`);
     }
   }
 
-  // browsery-v2/platform/pip.js
+  // platform/pip.js
   init_globals();
   var ACTORS = {
     PictureInPictureLauncher: {
@@ -10151,10 +10206,10 @@ ${error?.stack || ""}`);
     let bestArea = 0;
     for (const view of win.document.querySelectorAll("webview")) {
       const rect = view.getBoundingClientRect();
-      const area = rect.width * rect.height;
-      if (area > bestArea && view.checkVisibility?.() !== false) {
+      const area2 = rect.width * rect.height;
+      if (area2 > bestArea && view.checkVisibility?.() !== false) {
         best = view;
-        bestArea = area;
+        bestArea = area2;
       }
     }
     return best?.__browsery?.browser || null;
@@ -10229,7 +10284,234 @@ ${error?.stack || ""}`);
     return { ok: true };
   }
 
-  // browsery-v2/platform/index.js
+  // platform/media.js
+  init_globals();
+  var EVENTS = ["activated", "deactivated", "metadatachange", "playbackstatechange", "supportedkeyschange", "positionstatechange"];
+  var ACTIONS = /* @__PURE__ */ new Set(["play", "pause", "stop", "prevTrack", "nextTrack", "seekBackward", "seekForward"]);
+  var area = (sizes) => Math.max(0, ...String(sizes || "").split(/\s+/).map((size) => {
+    const [w, h] = size.toLowerCase().split("x").map(Number);
+    return (w || 0) * (h || 0);
+  }));
+  function createMedia(win, { emit, log: log3 }) {
+    const watched = /* @__PURE__ */ new Map();
+    const positions = /* @__PURE__ */ new Map();
+    const order = /* @__PURE__ */ new Map();
+    let timer = 0;
+    function describe2(id, controller) {
+      let meta = null;
+      try {
+        meta = controller.getMetadata();
+      } catch {
+      }
+      const art = (meta?.artwork || []).filter((item) => /^(https?:|data:image\/)/i.test(String(item?.src || ""))).sort((a, b) => area(b.sizes) - area(a.sizes))[0];
+      let keys = [];
+      try {
+        keys = [...controller.supportedKeys || []];
+      } catch {
+      }
+      return {
+        id,
+        playing: Boolean(controller.isPlaying),
+        audible: Boolean(controller.isAudible),
+        state: String(controller.playbackState || "none"),
+        keys,
+        title: String(meta?.title || "").slice(0, 300),
+        artist: String(meta?.artist || "").slice(0, 200),
+        album: String(meta?.album || "").slice(0, 200),
+        artwork: art ? String(art.src).slice(0, 4e3) : "",
+        position: positions.get(id) || null,
+        since: order.get(id) || 0
+      };
+    }
+    function list() {
+      const out = [];
+      for (const [id, item] of watched) {
+        try {
+          if (item.controller.isActive) out.push(describe2(id, item.controller));
+        } catch {
+        }
+      }
+      return out.sort((a, b) => b.playing - a.playing || b.since - a.since);
+    }
+    const changed = () => {
+      win.clearTimeout(timer);
+      timer = win.setTimeout(() => emit("media:update", list()), 80);
+    };
+    function sync() {
+      const live = /* @__PURE__ */ new Set();
+      for (const state of allWebviews()) {
+        const id = state?.id;
+        let controller = null;
+        try {
+          controller = state.browser?.browsingContext?.mediaController || null;
+        } catch {
+        }
+        if (!id || !controller) continue;
+        live.add(id);
+        const known = watched.get(id);
+        if (known?.controller === controller) continue;
+        known?.off();
+        const onEvent = (event) => {
+          if (event.type === "positionstatechange") positions.set(id, { duration: Number(event.duration) || 0, position: Number(event.position) || 0, rate: Number(event.playbackRate) || 1, at: Date.now() });
+          if (event.type === "playbackstatechange" && controller.isPlaying) order.set(id, Date.now());
+          if (event.type === "activated") order.set(id, Date.now());
+          changed();
+        };
+        for (const type of EVENTS) controller.addEventListener(type, onEvent);
+        watched.set(id, { controller, off: () => {
+          for (const type of EVENTS) {
+            try {
+              controller.removeEventListener(type, onEvent);
+            } catch {
+            }
+          }
+        } });
+        try {
+          if (controller.isActive) {
+            order.set(id, Date.now());
+            changed();
+          }
+        } catch {
+        }
+      }
+      for (const [id, item] of watched) {
+        if (live.has(id)) continue;
+        item.off();
+        watched.delete(id);
+        positions.delete(id);
+        order.delete(id);
+        changed();
+      }
+    }
+    win.setInterval(sync, 2e3);
+    win.setTimeout(sync, 500);
+    return {
+      list: () => {
+        sync();
+        return list();
+      },
+      control(id, action) {
+        sync();
+        const item = watched.get(Number(id));
+        if (!item) return { ok: false };
+        const c = item.controller;
+        try {
+          if (action === "toggle") {
+            if (c.isPlaying) c.pause();
+            else c.play();
+          } else if (ACTIONS.has(action)) c[action]();
+          else return { ok: false };
+        } catch (error) {
+          log3(`media ${action}: ${error}`);
+          return { ok: false };
+        }
+        return { ok: true };
+      },
+      refresh: () => {
+        sync();
+        changed();
+      }
+    };
+  }
+
+  // ../browsery-gecko/platform/shared-prefs.js
+  init_globals();
+  var SHARED = ["browsery.content.allowlist", "browsery.content.darkOn", "browsery.content.darkOff", "browsery.content.hidden"];
+  function shareContentPrefs(log3 = () => {
+  }) {
+    const shared = Services.ppmm?.sharedData;
+    if (!shared) return () => {
+    };
+    const copy = (name) => {
+      let value = "";
+      try {
+        value = Services.prefs.getStringPref(name, "");
+      } catch {
+      }
+      try {
+        shared.set(`pref:${name}`, value);
+      } catch (error) {
+        log3(`shared ${name}: ${error}`);
+      }
+    };
+    for (const name of SHARED) copy(name);
+    try {
+      shared.flush();
+    } catch {
+    }
+    const observer = { observe(subject, topic, name) {
+      if (SHARED.includes(name)) {
+        copy(name);
+        try {
+          shared.flush();
+        } catch {
+        }
+      }
+    } };
+    Services.prefs.addObserver("browsery.content.", observer);
+    return () => {
+      try {
+        Services.prefs.removeObserver("browsery.content.", observer);
+      } catch {
+      }
+    };
+  }
+
+  // platform/hide.js
+  init_globals();
+  var PREF = "browsery.content.hidden";
+  function hiddenRules() {
+    try {
+      const all = JSON.parse(Services.prefs.getStringPref(PREF, "{}"));
+      return all && typeof all === "object" ? all : {};
+    } catch {
+      return {};
+    }
+  }
+  var actorOf = (state) => {
+    try {
+      return state?.browser?.browsingContext?.currentWindowGlobal?.getActor("BrowseryPage") || null;
+    } catch {
+      return null;
+    }
+  };
+  async function hideOnPage(state, on = true) {
+    const actor = actorOf(state);
+    if (!actor) return { ok: false };
+    try {
+      const result = await actor.sendQuery("Browsery:Pick", { on: Boolean(on) });
+      if (on && result?.ok) {
+        try {
+          state.browser.focus();
+        } catch {
+        }
+      }
+      return result || { ok: false };
+    } catch {
+      return { ok: false };
+    }
+  }
+  function showAgain(host, selector) {
+    const all = hiddenRules();
+    const site = String(host || "");
+    if (selector) all[site] = (all[site] || []).filter((item) => item !== selector);
+    else delete all[site];
+    if (Array.isArray(all[site]) && !all[site].length) delete all[site];
+    try {
+      Services.prefs.setStringPref(PREF, JSON.stringify(all));
+    } catch {
+      return { ok: false };
+    }
+    for (const state of allWebviews()) {
+      try {
+        actorOf(state)?.sendAsyncMessage("Browsery:HiddenRefresh", { all });
+      } catch {
+      }
+    }
+    return { ok: true };
+  }
+
+  // platform/index.js
   globalThis.BROWSERY_GECKO_VERSION = "2.1.0";
   globalThis.BROWSERY_INTERFACE_VERSION = "2.1.0";
   window.__browseryProbeControls = { omnibox: ".v2-urlbar input", newTab: ".v2-newtab-button", settings: ".v2-settings-button" };
@@ -10291,7 +10573,7 @@ ${error?.stack || ""}`);
       } catch {
       }
       try {
-        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131536 });
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131704 });
       } catch {
       }
       win.addEventListener("unload", () => {
@@ -10315,6 +10597,8 @@ ${error?.stack || ""}`);
     } catch {
     }
     registerActors();
+    const unshare = shareContentPrefs(log2);
+    win.addEventListener("unload", unshare);
     installWebviewSupport(document);
     const bridge = createBridge(win);
     const short = (text) => {
@@ -10348,12 +10632,19 @@ ${error?.stack || ""}`);
           items.push({ label: "Save to reading list", action: { type: "read-later" } });
           items.push({ label: "Save page as PDF", action: { type: "pdf" } });
           items.push({ label: "Screenshot", action: { type: "shot" } });
+          items.push({ label: "Hide parts of this page\u2026", action: { type: "hide-parts" } });
         }
         return items;
       }
     });
     const google = createGoogle({ emit: bridge.emit, log: log2 });
     const tools = createTools(win, { log: log2, emit: bridge.emit });
+    let media = null;
+    try {
+      media = createMedia(win, { log: log2, emit: bridge.emit });
+    } catch (error) {
+      log2(`now playing: ${error}`);
+    }
     let notices = {};
     try {
       notices = installPopupNotifications(win, { emit: bridge.emit, on: bridge.on, log: log2 });
@@ -10409,7 +10700,7 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
-      build: 202611131536,
+      build: 202611131704,
       // The interface calls this once it is on screen: an update that just went in is
       // kept (shell/guard.js would otherwise put the previous files back), and files
       // no build lists any more are cleared out a little later.
@@ -10463,10 +10754,14 @@ ${error?.stack || ""}`);
         } catch {
         }
         return [
-          `Browsery ${"2.1.0"} (build ${202611131536})`,
+          `Browsery ${"2.1.0"} (build ${202611131704})`,
           `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
           `Graphics: ${renderer || "unknown"}`,
           `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
+          (() => {
+            const st = diagnostics.stalls?.();
+            return st ? `Moments the window stopped responding this session: ${st.count}${st.count ? ` (longest ${(st.longest / 1e3).toFixed(1)} s, ${st.background} while in the background)` : ""}` : "";
+          })(),
           `Report made: ${(/* @__PURE__ */ new Date()).toISOString()}`,
           "",
           "--- Browsery log (newest last) ---",
@@ -10475,6 +10770,14 @@ ${error?.stack || ""}`);
       },
       // A video in its own window that stays on top (Ctrl Shift ]).
       pictureInPicture: (id) => togglePictureInPicture(id),
+      // Now playing: what plays in any tab, with play, pause, previous and next.
+      mediaSessions: () => media?.list() || [],
+      mediaControl: (id, action) => media?.control(id, action) || { ok: false },
+      onMediaUpdate: (callback) => bridge.on("media:update", callback),
+      // Hide parts of a page: pick things on the page and they stay hidden on that site.
+      hidePartsOfPage: (id, on = true) => hideOnPage(webviewById(id), on),
+      hiddenOnSites: () => hiddenRules(),
+      showHiddenAgain: (host, selector) => showAgain(host, selector),
       // Mouse gestures in pages and darkening light sites (Settings › Appearance).
       setGestures: (on) => {
         try {

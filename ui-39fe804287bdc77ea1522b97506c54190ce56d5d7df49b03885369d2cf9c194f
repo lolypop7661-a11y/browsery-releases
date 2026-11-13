@@ -2,6 +2,7 @@
 // a DOM event on the tab's <browser> (webview.js turns it into Electron's
 // dom-ready / page-favicon-updated events), and serves Browsery's search pages.
 const VIRTUAL_MARK = '#browsery-virtual=';
+const HIDDEN_PREF = 'browsery.content.hidden';
 
 export class BrowseryPageParent extends JSWindowActorParent {
   get shell() {
@@ -52,6 +53,27 @@ export class BrowseryPageParent extends JSWindowActorParent {
         browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-gesture', { detail: { dir }, bubbles: true }));
         return undefined;
       }
+      case 'Browsery:Hide': {
+        // Something picked on the page: kept for the page's site (from the parent's own
+        // record of the page's address, not the message).
+        if (!browser?.ownerDocument || this.browsingContext?.parent) return undefined;
+        const selector = String(message.data?.selector || '').trim().slice(0, 600);
+        if (!selector || /[{}<]/.test(selector)) return undefined;
+        let host = '';
+        try { const uri = this.browsingContext.currentWindowGlobal.documentURI; if (/^https?$/.test(uri.scheme)) host = uri.host.replace(/^www\./, ''); } catch {}
+        if (!host) return undefined;
+        let all = {};
+        try { all = JSON.parse(Services.prefs.getStringPref(HIDDEN_PREF, '{}')) || {}; } catch {}
+        const list = Array.isArray(all[host]) ? all[host].filter(item => item !== selector) : [];
+        list.push(selector);
+        all[host] = list.slice(-200);
+        try { Services.prefs.setStringPref(HIDDEN_PREF, JSON.stringify(all)); } catch {}
+        browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-hidden', { detail: { host, selector, count: all[host].length }, bubbles: true }));
+        return undefined;
+      }
+      case 'Browsery:PickDone':
+        if (browser?.ownerDocument) browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-pick-done', { detail: {}, bubbles: true }));
+        return undefined;
       case 'Browsery:SearchCall':
         if (!internal || !this.isBrowseryPage()) throw new Error('Not a Browsery page.');
         return internal.searchCall(String(message.data?.path || ''), String(message.data?.search || ''));

@@ -12,10 +12,19 @@ const VIRTUAL_MARK = '#browsery-virtual=';
 // the page's, so pull them off the window first.
 const PAGE_BUILTINS = 'const { JSON, Function, Proxy, WeakMap, Reflect, Object, Number } = window;';
 
+// Web pages run in content processes, which are not given text preferences (Firefox
+// keeps them from web content). The Browsery window copies the few this actor reads
+// into the processes' shared data (platform/shared-prefs.js); straight from the
+// preference only where it can be read (the parent process).
+function stringPref(name, fallback = '') {
+  try { const shared = Services.cpmm?.sharedData?.get(`pref:${name}`); if (typeof shared === 'string') return shared; } catch {}
+  try { return Services.prefs.getStringPref(name, fallback); } catch { return fallback; }
+}
+
 function adblockOn(host) {
   try {
     if (!Services.prefs.getBoolPref('browsery.content.adblock', true)) return false;
-    const allowed = Services.prefs.getStringPref('browsery.content.allowlist', '').split(',').map(item => item.trim()).filter(Boolean);
+    const allowed = stringPref('browsery.content.allowlist', '').split(',').map(item => item.trim()).filter(Boolean);
     return !allowed.some(site => host === site || host.endsWith(`.${site}`));
   } catch { return false; }
 }
@@ -25,6 +34,44 @@ function adblockOn(host) {
 const DARK_CSS = `html { filter: invert(1) hue-rotate(180deg) brightness(.94) contrast(.94) !important; background: #fff !important; }
 img, video, picture, canvas, iframe, embed, object, svg image, [style*="background-image"], :fullscreen { filter: invert(1) hue-rotate(180deg) !important; }
 picture img { filter: none !important; }`;
+
+// Hide parts of a page: what someone picks stays hidden on that site. The rules are
+// CSS selectors in browsery.content.hidden ({ "site": [selectors] }), applied as a user
+// sheet so a page's own styles can't bring them back.
+const HIDDEN_PREF = 'browsery.content.hidden';
+const PICKER_CSS = `.box { position: fixed; z-index: 2147483647; pointer-events: none; display: none; box-sizing: border-box; border: 2px solid #ff4f6d; border-radius: 5px; background: rgba(255, 79, 109, .14); box-shadow: 0 0 0 1px rgba(255, 255, 255, .5), 0 8px 30px rgba(255, 79, 109, .25); transition: left .09s ease-out, top .09s ease-out, width .09s ease-out, height .09s ease-out; }
+.label { position: fixed; z-index: 2147483647; pointer-events: none; display: none; max-width: 60vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 4px 9px; border-radius: 6px; background: #ff4f6d; color: #fff; font: 600 12px/1.35 system-ui, -apple-system, "Segoe UI", sans-serif; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); }
+.label i { font-style: normal; font-weight: 400; opacity: .85; }`;
+
+// A short CSS selector for one element: an id or classes that look hand-written,
+// with positions only where needed, from the element up until it is unique.
+function selectorFor(el, win) {
+  const doc = el.ownerDocument;
+  const esc = text => win.CSS.escape(text);
+  const unique = sel => { try { return doc.querySelectorAll(sel).length === 1; } catch { return false; } };
+  const stable = name => name && name.length < 40 && !/\d{4,}|^[a-f0-9]{6,}$|[_-](?=[a-z]*\d)[a-z0-9]{5,}$/i.test(name) && !/^(is|has)-|active|hover|focus|open|selected|visible/i.test(name);
+  const parts = [];
+  let node = el;
+  for (let depth = 0; node && node.nodeType === 1 && node.localName !== 'html' && node.localName !== 'body' && depth < 8; depth++) {
+    if (node.id && stable(node.id)) {
+      parts.unshift(`#${esc(node.id)}`);
+      if (unique(parts.join(' > '))) return parts.join(' > ');
+      node = node.parentElement; continue;
+    }
+    let part = node.localName;
+    const classes = [...node.classList].filter(stable).slice(0, 3);
+    if (classes.length) part += classes.map(name => `.${esc(name)}`).join('');
+    const parent = node.parentElement;
+    if (parent && !unique([part, ...parts].join(' > '))) {
+      const same = [...parent.children].filter(child => child.localName === node.localName);
+      if (same.length > 1) part += `:nth-of-type(${same.indexOf(node) + 1})`;
+    }
+    parts.unshift(part);
+    if (unique(parts.join(' > '))) return parts.join(' > ');
+    node = parent;
+  }
+  return parts.join(' > ');
+}
 
 export class BrowseryPageChild extends JSWindowActorChild {
   constructor() {
@@ -130,7 +177,7 @@ export class BrowseryPageChild extends JSWindowActorChild {
     const win = this.contentWindow;
     let host = '';
     try { if (!/^https?:$/.test(win.location.protocol)) return false; host = win.location.hostname.replace(/^www\./, ''); } catch { return false; }
-    const list = name => { try { return Services.prefs.getStringPref(name, '').split(',').map(item => item.trim()).filter(Boolean); } catch { return []; } };
+    const list = name => stringPref(name, '').split(',').map(item => item.trim()).filter(Boolean);
     if (list('browsery.content.darkOff').includes(host)) return false;
     if (list('browsery.content.darkOn').includes(host)) return true;
     try { return Services.prefs.getBoolPref('browsery.content.forceDark', false); } catch { return false; }
@@ -154,6 +201,114 @@ export class BrowseryPageChild extends JSWindowActorChild {
     if (this.darkened && !want) { try { win.windowUtils.removeSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET); } catch {} this.darkened = false; }
     if (!this.darkened && want && (force || this.pageIsLight())) { try { win.windowUtils.loadSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET); this.darkened = true; } catch {} }
   }
+
+  // ----- Hide parts of a page -----
+  siteName() {
+    try { const win = this.contentWindow; return /^https?:$/.test(win.location.protocol) ? win.location.hostname.replace(/^www\./, '') : ''; } catch { return ''; }
+  }
+
+  hiddenFor(host, all) {
+    let rules = all;
+    if (!rules) { try { rules = JSON.parse(stringPref(HIDDEN_PREF, '{}')); } catch { rules = {}; } }
+    return Array.isArray(rules?.[host]) ? rules[host].map(String) : [];
+  }
+
+  applyHidden(extra = [], all = null) {
+    if (this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    const host = this.siteName();
+    if (!win?.windowUtils || !host) return;
+    const rules = [...new Set([...this.hiddenFor(host, all), ...extra])].filter(rule => rule && rule.length < 600 && !/[{}<]/.test(rule));
+    if (this.hiddenSheet) { try { win.windowUtils.removeSheetUsingURIString(this.hiddenSheet, Ci.nsIDOMWindowUtils.USER_SHEET); } catch {} this.hiddenSheet = ''; }
+    if (!rules.length) return;
+    // one rule per selector, so a selector this engine can't read only drops itself
+    const uri = `data:text/css;charset=utf-8,${encodeURIComponent(rules.map(rule => `${rule} { display: none !important; }`).join('\n'))}`;
+    try { win.windowUtils.loadSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.USER_SHEET); this.hiddenSheet = uri; } catch {}
+  }
+
+  // The picker: what is under the pointer is outlined; a click hides it, ↑ and ↓ pick
+  // a bigger or smaller part, Esc stops. The outline lives in the page's anonymous
+  // content, out of reach of the page's own scripts and styles.
+  startPicker() {
+    if (this.picker) return { ok: true, host: this.siteName() };
+    if (this.browsingContext.parent) return { ok: false };
+    const win = this.contentWindow;
+    const doc = this.document;
+    const host = this.siteName();
+    if (!win || !doc?.documentElement || !host) return { ok: false };
+    const make = cls => { const el = doc.createElement('div'); el.className = cls; return el; };
+    const style = doc.createElement('style'); style.textContent = PICKER_CSS;
+    const box = make('box'); const label = make('label');
+    let anon = null, holder = null;
+    try { anon = doc.insertAnonymousContent(); anon.root.append(style, box, label); }
+    catch {
+      anon = null;
+      holder = doc.createElement('browsery-picker');
+      const root = holder.attachShadow({ mode: 'closed' });
+      root.append(style, box, label);
+      doc.documentElement.append(holder);
+    }
+    const picker = { anon, holder, box, label, chain: [], added: [], x: 0, y: 0 };
+    this.picker = picker;
+    const usable = el => el && el.nodeType === 1 && el.localName !== 'html' && el.localName !== 'body' && el !== holder;
+    const show = el => {
+      if (!usable(el)) { box.style.display = label.style.display = 'none'; return; }
+      const r = el.getBoundingClientRect();
+      Object.assign(box.style, { display: 'block', left: `${r.left - 2}px`, top: `${r.top - 2}px`, width: `${r.width + 4}px`, height: `${r.height + 4}px` });
+      const name = `${el.localName}${el.id ? `#${el.id}` : ''}${[...el.classList].slice(0, 2).map(c => `.${c}`).join('')}`;
+      label.textContent = '';
+      label.append(doc.createTextNode(name.slice(0, 60)));
+      const size = doc.createElement('i'); size.textContent = `  ${Math.round(r.width)} × ${Math.round(r.height)}`;
+      label.append(size);
+      const above = r.top > 30;
+      Object.assign(label.style, { display: 'block', left: `${Math.max(4, Math.min(r.left, win.innerWidth - 260))}px`, top: `${above ? r.top - 28 : Math.min(r.bottom + 6, win.innerHeight - 28)}px` });
+    };
+    const current = () => picker.chain[picker.chain.length - 1] || null;
+    const pointAt = (x, y) => {
+      picker.x = x; picker.y = y;
+      const el = doc.elementFromPoint(x, y);
+      picker.chain = usable(el) ? [el] : [];
+      show(current());
+    };
+    const block = event => { event.preventDefault(); event.stopImmediatePropagation(); };
+    const handlers = {
+      mousemove: event => pointAt(event.clientX, event.clientY),
+      scroll: () => show(current()),
+      click: event => {
+        block(event);
+        const el = current();
+        if (!usable(el)) return;
+        const selector = selectorFor(el, win);
+        if (!selector) return;
+        picker.added.push(selector);
+        this.applyHidden(picker.added);
+        this.sendAsyncMessage('Browsery:Hide', { selector });
+        win.setTimeout(() => pointAt(picker.x, picker.y), 30);
+      },
+      keydown: event => {
+        if (event.key === 'Escape') { block(event); this.stopPicker(); this.sendAsyncMessage('Browsery:PickDone', {}); return; }
+        if (event.key === 'ArrowUp') { block(event); const el = current(); const up = el?.parentElement; if (usable(up)) { picker.chain.push(up); show(up); } return; }
+        if (event.key === 'ArrowDown') { block(event); if (picker.chain.length > 1) { picker.chain.pop(); show(current()); } }
+      },
+    };
+    for (const type of ['mousedown', 'mouseup', 'pointerdown', 'pointerup', 'auxclick', 'dblclick', 'contextmenu', 'submit']) handlers[type] = block;
+    picker.off = () => {
+      for (const [type, handler] of Object.entries(handlers)) win.removeEventListener(type, handler, true);
+    };
+    for (const [type, handler] of Object.entries(handlers)) win.addEventListener(type, handler, { capture: true, passive: false });
+    return { ok: true, host };
+  }
+
+  stopPicker() {
+    const picker = this.picker;
+    if (!picker) return;
+    this.picker = null;
+    try { picker.off(); } catch {}
+    try { if (picker.anon) this.document.removeAnonymousContent(picker.anon); } catch {}
+    try { picker.holder?.remove(); } catch {}
+  }
+
+  didDestroy() { this.stopPicker(); }
 
   // ----- Mouse gestures: hold the right button and draw a stroke -----
   // ← back, → forward, ↑ new tab, ↓ reload. Off unless browsery.content.gestures is on.
@@ -193,7 +348,7 @@ export class BrowseryPageChild extends JSWindowActorChild {
   handleEvent(event) {
     if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.darken(); this.watchGestures(); }
     if (event.type === 'load') this.darken();
-    if (event.type === 'DOMWindowCreated') { this.exposeBrowseryPage(); if (this.webOnlyGoogle()) return; this.protect(); this.skinGoogle(); }
+    if (event.type === 'DOMWindowCreated') { this.exposeBrowseryPage(); if (this.webOnlyGoogle()) return; this.protect(); this.skinGoogle(); this.applyHidden(); }
     else if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.protect(); this.skinGoogle(); this.recolorGoogle(); this.stripGoogle(); this.reportLoaded(); this.watchLogins(); this.watchLinks(); }
     else if (event.type === 'pageshow' && event.persisted) this.reportLoaded();
   }
@@ -289,6 +444,12 @@ export class BrowseryPageChild extends JSWindowActorChild {
         this.darken(on === null || on === undefined ? undefined : Boolean(on));
         return { darkened: Boolean(this.darkened), light: this.pageIsLight() };
       }
+      case 'Browsery:Pick':
+        if (message.data?.on === false) { this.stopPicker(); return { ok: true }; }
+        return this.startPicker();
+      case 'Browsery:HiddenRefresh':
+        this.applyHidden(this.picker ? this.picker.added.filter(rule => this.hiddenFor(this.siteName(), message.data?.all).includes(rule)) : [], message.data?.all || null);
+        return true;
       case 'Browsery:VideoInfo': {
         const video = this.findVideo();
         if (!video) return null;
