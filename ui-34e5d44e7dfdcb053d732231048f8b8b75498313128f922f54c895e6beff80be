@@ -1,0 +1,219 @@
+// Runs in Gecko content processes for every page in a Browsery tab.
+//  - Ad blocker: hides leftover ad slots with a user stylesheet and runs the
+//    same anti-adblock and YouTube page code as the Electron build
+//    (generated into content-rules.sys.mjs from webview-content-preload.cjs).
+//  - Page tools for the interface: executeJavaScript, insertCSS, title/icons.
+import { GENERIC_HIDE, YOUTUBE_HIDE, PRELUDE, ANTI_DETECTION, YOUTUBE } from 'resource://browsery/actors/content-rules.sys.mjs';
+import { GOOGLE_SKIN, GOOGLE_RECOLOR, GOOGLE_STRIP, isGoogleSearch, webOnlyUrl } from 'resource://browsery/actors/google-skin.sys.mjs';
+
+const YT_HOST = /(?:^|\.)youtube(?:-nocookie)?\.com$/;
+const VIRTUAL_MARK = '#browsery-virtual=';
+// JS built-ins inside a sandbox are the sandbox's own; page patches must use
+// the page's, so pull them off the window first.
+const PAGE_BUILTINS = 'const { JSON, Function, Proxy, WeakMap, Reflect, Object, Number } = window;';
+
+function adblockOn(host) {
+  try {
+    if (!Services.prefs.getBoolPref('browsery.content.adblock', true)) return false;
+    const allowed = Services.prefs.getStringPref('browsery.content.allowlist', '').split(',').map(item => item.trim()).filter(Boolean);
+    return !allowed.some(site => host === site || host.endsWith(`.${site}`));
+  } catch { return false; }
+}
+
+export class BrowseryPageChild extends JSWindowActorChild {
+  constructor() {
+    super();
+    this.sheets = new Map();
+    this.sandbox = null;
+    this.protectedPage = false;
+    this.skinned = false;
+    this.recolored = false;
+    this.stripped = false;
+  }
+
+  get pageSandbox() {
+    if (!this.sandbox) {
+      const win = this.contentWindow;
+      this.sandbox = Cu.Sandbox(win, { sandboxPrototype: win, wantXrays: false, sameZoneAs: win, sandboxName: 'Browsery page tools' });
+    }
+    return this.sandbox;
+  }
+
+  // Browsery's own pages (search) are data: documents tagged by the Browsery
+  // window; they get two functions to reach the search service. Only in the
+  // top frame: web pages can't open top-level data: documents themselves.
+  exposeBrowseryPage() {
+    if (this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    const address = String(this.document?.documentURI || '');
+    if (!win || !address.startsWith('data:text/html') || !address.includes(VIRTUAL_MARK)) return;
+    Cu.exportFunction((path, search) => new win.Promise((resolve, reject) => {
+      this.sendQuery('Browsery:SearchCall', { path: String(path || ''), search: String(search || '') })
+        .then(result => resolve(Cu.cloneInto(result, win)), error => reject(new win.Error(String(error?.message || error))));
+    }), win, { defineAs: 'browserySearch' });
+    Cu.exportFunction(url => { this.sendAsyncMessage('Browsery:Open', { url: String(url || '') }); }, win, { defineAs: 'browseryOpen' });
+  }
+
+  // Browsery v2 offers to save a password when someone signs in. Listeners
+  // are the actor's own (pages can't see or remove them); only the top frame
+  // of http(s) pages, and only when the app asked for it.
+  watchLogins() {
+    if (this.loginWatch || this.browsingContext.parent) return;
+    try { if (!Services.prefs.getBoolPref('browsery.content.loginCapture', false)) return; } catch { return; }
+    const doc = this.document;
+    const win = this.contentWindow;
+    if (!doc || !win || !/^https?:$/.test(win.location.protocol)) return;
+    this.loginWatch = true;
+    let lastSent = '';
+    const visible = input => { try { const rect = input.getBoundingClientRect(); return rect.width > 0 && rect.height > 0 && !input.disabled; } catch { return false; } };
+    const capture = scope => {
+      const root = scope && scope.querySelectorAll ? scope : doc;
+      const passwords = [...root.querySelectorAll('input[type="password"]')].filter(input => input.value && visible(input));
+      const password = passwords[0] || [...doc.querySelectorAll('input[type="password"]')].find(input => input.value && visible(input));
+      if (!password) return;
+      const fields = [...(password.form || doc).querySelectorAll('input')];
+      const before = fields.slice(0, fields.indexOf(password)).reverse();
+      const isName = input => ['text', 'email', 'tel', ''].includes((input.type || 'text').toLowerCase()) && input.value && input.value.length < 200;
+      const user = before.find(isName) || fields.find(isName);
+      const username = user ? user.value.trim() : '';
+      const key = `${win.location.origin}|${username}|${password.value.length}`;
+      if (!username || key === lastSent) return;
+      lastSent = key;
+      this.sendAsyncMessage('Browsery:LoginCapture', { origin: win.location.origin, username: username.slice(0, 256), password: password.value.slice(0, 1024) });
+    };
+    doc.addEventListener('submit', event => capture(event.target), true);
+    doc.addEventListener('click', event => {
+      const button = event.target?.closest?.('button, input[type="submit"], [role="button"]');
+      if (button) win.setTimeout(() => capture(button.form || null), 0);
+    }, true);
+    doc.addEventListener('keydown', event => { if (event.key === 'Enter' && event.target?.type === 'password') capture(event.target.form || null); }, true);
+  }
+
+  // Link hover (for the status line) and Alt+click (opens the link in a
+  // floating glance card) — top-level documents only.
+  watchLinks() {
+    if (this.linkWatch || this.browsingContext.parent) return;
+    const doc = this.document;
+    const win = this.contentWindow;
+    if (!doc || !win) return;
+    this.linkWatch = true;
+    let last = '';
+    const linkOf = target => { try { const a = target?.closest?.('a[href]'); return a ? String(a.href || '') : ''; } catch { return ''; } };
+    doc.addEventListener('mouseover', event => {
+      const url = linkOf(event.target);
+      if (url === last) return;
+      last = url;
+      this.sendAsyncMessage('Browsery:LinkHover', { url: url.slice(0, 2000) });
+    }, true);
+    doc.addEventListener('mouseleave', () => { if (last) { last = ''; this.sendAsyncMessage('Browsery:LinkHover', { url: '' }); } }, true);
+    doc.addEventListener('click', event => {
+      if (!event.altKey || event.button !== 0) return;
+      const url = linkOf(event.target);
+      if (!/^https?:/.test(url)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      this.sendAsyncMessage('Browsery:Glance', { url: url.slice(0, 2000), x: Math.round(event.clientX), y: Math.round(event.clientY) });
+    }, true);
+  }
+
+  handleEvent(event) {
+    if (event.type === 'DOMWindowCreated') { this.exposeBrowseryPage(); if (this.webOnlyGoogle()) return; this.protect(); this.skinGoogle(); }
+    else if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.protect(); this.skinGoogle(); this.recolorGoogle(); this.stripGoogle(); this.reportLoaded(); this.watchLogins(); this.watchLinks(); }
+    else if (event.type === 'pageshow' && event.persisted) this.reportLoaded();
+  }
+
+  // Google results get Browsery's look (see google-skin.sys.mjs). Top frame
+  // only; switch off with the browsery.content.googleSkin preference.
+  skinGoogle() {
+    if (this.skinned || this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    if (!win || !isGoogleSearch(win)) return;
+    try { if (!Services.prefs.getBoolPref('browsery.content.googleSkin', true)) return; } catch { return; }
+    this.skinned = true;
+    try { win.windowUtils.loadSheetUsingURIString(`data:text/css;charset=utf-8,${encodeURIComponent(GOOGLE_SKIN)}`, Ci.nsIDOMWindowUtils.USER_SHEET); } catch (error) { Cu.reportError?.(error); }
+  }
+
+  // Google shows only web results, Images and Videos (see google-skin.sys.mjs):
+  // searches are sent to its plain "Web" view, then leftover blocks and tabs are
+  // hidden. Top frame only; switch off with browsery.content.googleStrip.
+  webOnlyGoogle() {
+    if (this.browsingContext.parent) return false;
+    const win = this.contentWindow;
+    if (!win) return false;
+    try { if (!Services.prefs.getBoolPref('browsery.content.googleStrip', true)) return false; } catch { return false; }
+    const target = webOnlyUrl(win);
+    if (!target) return false;
+    try { win.location.replace(target); return true; } catch (error) { Cu.reportError?.(error); return false; }
+  }
+
+  stripGoogle() {
+    if (this.stripped || this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    if (!win || !isGoogleSearch(win) || !win.document?.documentElement) return;
+    try { if (!Services.prefs.getBoolPref('browsery.content.googleStrip', true)) return; } catch { return; }
+    this.stripped = true;
+    try { Cu.evalInSandbox(`{ ${PAGE_BUILTINS} (() => { try {${GOOGLE_STRIP}} catch (e) {} })(); }`, this.pageSandbox, null, 'browsery-google-strip', 1); } catch (error) { Cu.reportError?.(error); }
+  }
+
+  // The recolouring needs the document's body; it runs once the page has loaded.
+  recolorGoogle() {
+    if (this.recolored || this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    if (!win || !isGoogleSearch(win) || !win.document?.documentElement) return;
+    try { if (!Services.prefs.getBoolPref('browsery.content.googleSkin', true)) return; } catch { return; }
+    this.recolored = true;
+    try { Cu.evalInSandbox(`{ ${PAGE_BUILTINS} (() => { try {${GOOGLE_RECOLOR}} catch (e) {} })(); }`, this.pageSandbox, null, 'browsery-google-skin', 1); } catch (error) { Cu.reportError?.(error); }
+  }
+
+  protect() {
+    if (this.protectedPage) return;
+    this.protectedPage = true;
+    const win = this.contentWindow;
+    if (!win) return;
+    let host = '';
+    let protocol = '';
+    try { host = win.location.hostname.toLowerCase(); protocol = win.location.protocol; } catch {}
+    if (protocol !== 'http:' && protocol !== 'https:') return;
+    if (!adblockOn(host)) return;
+    const youtube = YT_HOST.test(host);
+    const css = `${(youtube ? GENERIC_HIDE.concat(YOUTUBE_HIDE) : GENERIC_HIDE).join(',\n')} { display: none !important; }`;
+    try { win.windowUtils.loadSheetUsingURIString(`data:text/css;charset=utf-8,${encodeURIComponent(css)}`, Ci.nsIDOMWindowUtils.USER_SHEET); } catch {}
+    const parts = [ANTI_DETECTION];
+    if (youtube) parts.push(YOUTUBE);
+    try { Cu.evalInSandbox(`{ ${PAGE_BUILTINS} (() => { try {${PRELUDE}${parts.join('\n')}} catch (e) {} })(); }`, this.pageSandbox, null, 'browsery-protection', 1); } catch (error) { Cu.reportError?.(error); }
+  }
+
+  reportLoaded() {
+    if (this.browsingContext.parent) return;
+    const doc = this.document;
+    let icons = [];
+    try { icons = [...doc.querySelectorAll('link[rel~="icon" i]')].map(link => link.href).filter(Boolean).slice(0, 6); } catch {}
+    this.sendAsyncMessage('Browsery:Loaded', { icons, title: String(doc.title || '').slice(0, 512) });
+  }
+
+  async receiveMessage(message) {
+    const win = this.contentWindow;
+    switch (message.name) {
+      case 'Browsery:Exec': {
+        let result = Cu.evalInSandbox(String(message.data.code), this.pageSandbox, null, 'browsery-exec', 1);
+        if (result && typeof result.then === 'function') result = await result;
+        if (result === undefined) return null;
+        try { return JSON.parse(JSON.stringify(result)); } catch { return null; }
+      }
+      case 'Browsery:InsertCSS': {
+        const key = `css-${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+        const uri = `data:text/css;charset=utf-8,${encodeURIComponent(String(message.data.css))}`;
+        win.windowUtils.loadSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET);
+        this.sheets.set(key, uri);
+        return key;
+      }
+      case 'Browsery:RemoveCSS': {
+        const uri = this.sheets.get(String(message.data.key));
+        if (uri) { try { win.windowUtils.removeSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET); } catch {} this.sheets.delete(String(message.data.key)); }
+        return true;
+      }
+      default:
+        return null;
+    }
+  }
+}

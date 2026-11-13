@@ -1,0 +1,12 @@
+(function(){'use strict';
+var w=window,noop=function(){};w.ga=w.ga||noop;
+var dl=w.dataLayer=w.dataLayer||[];
+var run=function(item){try{if(!item||typeof item!=='object')return;
+if(typeof item.eventCallback==='function'){var c=item.eventCallback;item.eventCallback=noop;setTimeout(c,1)}
+var p=item[2];if(p&&typeof p==='object'&&typeof p.event_callback==='function'){var d=p.event_callback;p.event_callback=noop;setTimeout(d,1)}}catch(e){}};
+if(dl.hide&&typeof dl.hide.end==='function'){try{dl.hide.end()}catch(e){}dl.hide.end=noop}
+var push=dl.push;dl.push=function(){for(var i=0;i<arguments.length;i++)run(arguments[i]);return push.apply(this,arguments)};
+dl.slice().forEach(run);
+w.gtag=w.gtag||function(){dl.push(arguments)};
+w.google_tag_manager=w.google_tag_manager||{};
+})();

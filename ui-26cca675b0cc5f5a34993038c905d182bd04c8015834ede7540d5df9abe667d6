@@ -1,0 +1,13 @@
+(function(){'use strict';
+var noop=function(){};function Tracker(){}Tracker.prototype.get=noop;Tracker.prototype.set=noop;Tracker.prototype.send=noop;
+var w=window,name=w.GoogleAnalyticsObject||'ga',queue=w[name];
+var ga=function(){var a=Array.prototype.slice.call(arguments),last=a[a.length-1],fn;
+if(last&&typeof last==='object'&&typeof last.hitCallback==='function')fn=last.hitCallback;
+else if(typeof last==='function')fn=function(){last(ga.create())};
+else{var i=a.indexOf('hitCallback');if(i!==-1&&typeof a[i+1]==='function')fn=a[i+1]}
+if(fn){try{fn()}catch(e){}}};
+ga.create=ga.getByName=function(){return new Tracker()};ga.getAll=function(){return [new Tracker()]};ga.remove=noop;ga.loaded=true;
+w[name]=ga;
+w._gaq=w._gaq||[];w._gaq.push=function(){return 0};
+if(queue&&Array.isArray(queue.q)){var q=queue.q.slice();queue.q.length=0;q.forEach(function(e){ga.apply(null,e)})}
+})();

@@ -1,0 +1,6 @@
+(function(){'use strict';
+var mark=function(){try{document.querySelectorAll('ins.adsbygoogle:not([data-adsbygoogle-status])').forEach(function(el){el.setAttribute('data-adsbygoogle-status','done');el.setAttribute('data-ad-status','filled')})}catch(e){}};
+var old=window.adsbygoogle;
+window.adsbygoogle={loaded:true,push:function(){mark()}};
+if(Array.isArray(old))old.forEach(mark);mark();
+})();

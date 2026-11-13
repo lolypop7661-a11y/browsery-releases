@@ -1,0 +1,122 @@
+{
+ "id": "snow-temple",
+ "w": 3840,
+ "h": 1920,
+ "encode": 1.0,
+ "camera": {
+  "fov": 40,
+  "near": 0.1,
+  "far": 60000.0,
+  "pos": [
+   0.0,
+   1.6715,
+   -0.0
+  ],
+  "dir": [
+   0.0,
+   0.1034,
+   -0.9946
+  ],
+  "up": [
+   0.0,
+   0.9946,
+   0.1034
+  ]
+ },
+ "lights": [
+  {
+   "name": "skylight",
+   "kind": "sun",
+   "dir": [
+    0.433,
+    0.5,
+    0.75
+   ],
+   "color": [
+    0.7,
+    0.8,
+    1.0
+   ],
+   "strength": 0.06
+  }
+ ],
+ "moon": null,
+ "water": null,
+ "fog": {
+  "density": 0.002,
+  "height": 10,
+  "falloff": 0.05,
+  "color": "#6a7a90",
+  "tint": 0.4,
+  "glow": 0.0,
+  "glow_color": "#9db0dc"
+ },
+ "layers": {
+  "lamps": {
+   "flicker": 0.8
+  },
+  "particles": {
+   "kind": "snow",
+   "count": 1400
+  },
+  "mist": {
+   "height": 3,
+   "density": 0.2,
+   "color": "#a8b8c8"
+  }
+ },
+ "aux": {
+  "r": "logdepth",
+  "g": "water",
+  "b": "sway",
+  "a": "lamps",
+  "near": 0.25,
+  "far": 60000.0
+ },
+ "grade": {
+  "bake_exposure": 13.0
+ },
+ "palette": [
+  [
+   "#626c81",
+   0.2897135416666667
+  ],
+  [
+   "#627899",
+   0.2478298611111111
+  ],
+  [
+   "#6e86a6",
+   0.244140625
+  ],
+  [
+   "#a0b5cb",
+   0.07964409722222222
+  ],
+  [
+   "#879cb4",
+   0.07313368055555555
+  ],
+  [
+   "#516075",
+   0.06553819444444445
+  ]
+ ],
+ "tiers": [
+  4,
+  2,
+  1
+ ],
+ "horizon": [
+  0.39713,
+  0.71094,
+  1.25208
+ ],
+ "theme": "#8fd3ff",
+ "exposure": 13.0,
+ "render": {
+  "samples": 192,
+  "seconds": 108.2,
+  "device": "CPU"
+ }
+}

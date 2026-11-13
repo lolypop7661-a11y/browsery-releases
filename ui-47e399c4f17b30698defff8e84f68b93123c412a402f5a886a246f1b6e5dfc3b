@@ -1,0 +1,7 @@
+Planet explorer
+---------------
+The planet and surface images were rendered by the Browsery developer in Blender
+(tools/render/explorer.py) from the planet maps by Solar System Scope / INOVE
+(https://www.solarsystemscope.com/textures/), licensed CC BY 4.0
+(https://creativecommons.org/licenses/by/4.0/). The maps were modified
+(projection, lighting, atmosphere, colour and compositing).

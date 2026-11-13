@@ -1,0 +1,132 @@
+{
+ "id": "bamboo-shrine",
+ "w": 2560,
+ "h": 1280,
+ "encode": 1.0,
+ "camera": {
+  "fov": 40,
+  "near": 0.1,
+  "far": 60000.0,
+  "pos": [
+   0.0,
+   1.6673,
+   -0.0
+  ],
+  "dir": [
+   0.0,
+   0.034,
+   -0.9994
+  ],
+  "up": [
+   0.0,
+   0.9994,
+   0.034
+  ]
+ },
+ "lights": [
+  {
+   "name": "moonlight",
+   "kind": "sun",
+   "dir": [
+    0.1097,
+    0.6157,
+    -0.7803
+   ],
+   "color": [
+    0.66,
+    0.75,
+    1.0
+   ],
+   "strength": 0.14
+  }
+ ],
+ "moon": {
+  "dir": [
+   0.1097,
+   0.6157,
+   -0.7803
+  ],
+  "size": 3.0,
+  "phase": 0.0
+ },
+ "water": null,
+ "fog": {
+  "density": 0.004,
+  "height": 6.0,
+  "falloff": 0.12,
+  "color": "#3a5068",
+  "tint": 0.4,
+  "glow": 0.6,
+  "glow_color": "#9db0dc"
+ },
+ "layers": {
+  "sway": {
+   "strength": 0.6
+  },
+  "lamps": {
+   "flicker": 0.8
+  },
+  "mist": {
+   "height": 2.5,
+   "density": 0.3,
+   "color": "#90a8c0"
+  },
+  "particles": {
+   "kind": "firefly",
+   "count": 40
+  }
+ },
+ "aux": {
+  "r": "logdepth",
+  "g": "water",
+  "b": "sway",
+  "a": "lamps",
+  "near": 0.25,
+  "far": 60000.0
+ },
+ "grade": {
+  "bake_exposure": 20.0
+ },
+ "palette": [
+  [
+   "#213a4a",
+   0.505859375
+  ],
+  [
+   "#2d4357",
+   0.1733940972222222
+  ],
+  [
+   "#4d5258",
+   0.12391493055555555
+  ],
+  [
+   "#1c2a3c",
+   0.10894097222222222
+  ],
+  [
+   "#536b89",
+   0.05295138888888889
+  ],
+  [
+   "#9d8f8d",
+   0.03493923611111111
+  ]
+ ],
+ "tiers": [
+  2,
+  1
+ ],
+ "horizon": [
+  0.04654,
+  0.17181,
+  0.47058
+ ],
+ "theme": "#7ccf5b",
+ "exposure": 20.0,
+ "render": {
+  "samples": 256,
+  "seconds": 314.3,
+  "device": "CPU"
+ }
+}

@@ -1,0 +1,208 @@
+// Browsery's take on Google results. Google stays the search engine, but only
+// three things are left of its page: web results, Images and Videos. No AI
+// Overview or AI Mode, no "People also ask", knowledge panel, shopping, news,
+// ads or footer. On top of that it is restyled: Browsery's dark colours, the lime
+// accent, rounded result cards and the Browsery mark in place of Google's logo.
+//
+// Written against the selectors Google has kept stable (ids such as #rso and
+// #center_col, the result container .g, titles as "a h3"). Anything Google
+// renames simply stops matching and leaves that part of the page as Google
+// made it. Applied only when Google is already in its dark theme, so text
+// never ends up dark on dark.
+
+const HOST = /^(?:www\.)?google\.(?:[a-z]{2,3}|co\.[a-z]{2}|com\.[a-z]{2})$/;
+
+export function isGoogleSearch(win) {
+  try {
+    const { protocol, hostname, pathname } = win.location;
+    return (protocol === 'https:' || protocol === 'http:') && HOST.test(hostname.toLowerCase()) && pathname.startsWith('/search');
+  } catch { return false; }
+}
+
+// Google's own "Web" filter (udm=14) is a results page with only the organic
+// results: no AI Overview, panels or ad blocks. Searches without a view of their
+// own (All, AI Mode, News, Shopping, Forums...) are sent there; Images and Videos
+// are left alone. Google has used both udm=14 and udm=web for it.
+const KEEP_UDM = new Set(['14', 'web', '2', '7']);
+const KEEP_TBM = new Set(['isch', 'vid']);
+
+export function webOnlyUrl(win) {
+  if (!isGoogleSearch(win)) return null;
+  try {
+    const url = new URL(win.location.href);
+    if (!url.searchParams.get('q')) return null;
+    const udm = url.searchParams.get('udm');
+    const tbm = url.searchParams.get('tbm');
+    if (udm ? KEEP_UDM.has(udm) : (tbm && KEEP_TBM.has(tbm))) return null;
+    url.searchParams.set('udm', '14');
+    url.searchParams.delete('tbm');
+    return url.href;
+  } catch { return null; }
+}
+
+const MARK = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><mask id='m' maskUnits='userSpaceOnUse' x='0' y='0' width='64' height='64'><rect width='64' height='64' fill='white'/><g fill='black'><rect x='32' y='30.3' width='34' height='3.4' transform='rotate(-90 32 32)'/><rect x='32' y='30.3' width='34' height='3.4' transform='rotate(28 32 32)'/><rect x='32' y='30.3' width='34' height='3.4' transform='rotate(152 32 32)'/></g></mask></defs><circle cx='32' cy='32' r='26.2' fill='none' stroke='%23e9ecf1' stroke-width='7.2' mask='url(%23m)'/><ellipse cx='31.3' cy='31.3' rx='21.4' ry='6.5' transform='rotate(-30 31.3 31.3)' fill='none' stroke='%23b9d36a' stroke-width='1.3'/></svg>";
+
+// The anchors Google wraps its logo in.
+const LOGO = [
+  'a[href^="/webhp"]:has(img)', 'a[href^="/webhp"]:has(svg)',
+  'a:has(> img[alt="Google"])', 'a:has(> img[src*="googlelogo"])',
+  'a[title="Go to Google Home"]', 'a[aria-label="Go to Google Home"]',
+].join(',\n  ');
+
+const FONT = '"Segoe UI Variable Text", "Segoe UI", Inter, system-ui, sans-serif';
+
+export const GOOGLE_SKIN_DARK = `
+@media (prefers-color-scheme: dark) {
+  :root { --b-bg: #101217; --b-surface: #171a21; --b-line: #262b35; --b-text: #e9ecf1; --b-soft: #c8cfda; --b-muted: #98a2b3; --b-accent: #b9d36a; color-scheme: dark; }
+  html, body, #main, #cnt, #rcnt, #center_col, #sfcnt, #searchform, #appbar, #hdtb, #hdtb-msb, #top_nav, #extabar, #botstuff, #bres, #rhs, .sfbg, .sfbgg { background: var(--b-bg) !important; }
+  .sfbg, .sfbgg, #hdtb, #hdtb-msb { border-color: var(--b-line) !important; box-shadow: none !important; }
+  body { font-family: ${FONT}; }
+  ::selection { background: rgba(185, 211, 106, .35); }
+
+  /* The search pill. */
+  .RNNXgb, .SDkEP { background: var(--b-surface) !important; border: 1px solid var(--b-line) !important; border-radius: 999px !important; box-shadow: none !important; }
+  .RNNXgb:focus-within, .SDkEP:focus-within { border-color: var(--b-accent) !important; }
+
+  /* Results. */
+  #rso a h3, #search a h3 { color: var(--b-accent) !important; font-family: ${FONT}; font-weight: 500; letter-spacing: -.005em; }
+  #rso a:visited h3, #search a:visited h3 { color: #9fb27a !important; }
+  #rso cite, #rso .VuuXrf, #rso .byrV5b, #search cite { color: var(--b-muted) !important; }
+  #rso .VwiC3b, #rso [data-sncf], #search .VwiC3b { color: var(--b-soft) !important; font-family: ${FONT}; }
+  #rso div.g:not(div.g div.g) { background: var(--b-surface); border: 1px solid var(--b-line); border-radius: 18px; padding: 16px 20px !important; margin-bottom: 14px !important; }
+  #rso div.g:not(div.g div.g):hover { border-color: #343b48; }
+
+  /* The tab you are on. */
+  #hdtb [aria-current="page"], [role="navigation"] [aria-current="page"], #hdtb [aria-selected="true"] { color: var(--b-accent) !important; border-bottom-color: var(--b-accent) !important; }
+
+  /* Browsery's mark and name in place of Google's logo. */
+  ${LOGO} { display: inline-flex !important; align-items: center; gap: 10px; width: auto !important; height: auto !important; font-size: 0 !important; text-decoration: none !important; }
+  ${LOGO.split(',\n  ').map(selector => `${selector} > *`).join(',\n  ')} { display: none !important; }
+  ${LOGO.split(',\n  ').map(selector => `${selector}::before`).join(',\n  ')} { content: ""; flex: none; width: 30px; height: 30px; background: url("data:image/svg+xml,${MARK}") center / contain no-repeat; }
+  ${LOGO.split(',\n  ').map(selector => `${selector}::after`).join(',\n  ')} { content: "Browsery"; color: var(--b-text); font: 600 22px/1 "Segoe UI Variable Display", "Segoe UI", Inter, system-ui, sans-serif; letter-spacing: -.02em; }
+
+  /* Browsery's type everywhere except icons and code. */
+  #center_col :not(svg, svg *, code, pre, kbd, samp, i, [class*="icon" i], [class*="material" i]), #rhs :not(svg, svg *, i, [class*="icon" i], [class*="material" i]), #hdtb :not(svg, svg *, i, [class*="icon" i], [class*="material" i]) { font-family: ${FONT} !important; }
+  #center_col [role="heading"] { font-weight: 600 !important; letter-spacing: -.012em; }
+  #center_col li, #center_col p { line-height: 1.6; }
+
+  /* Links inside answers: lime, with a quiet underline, instead of Google's blue. */
+  #center_col :is(li, p, span, b, strong) > a[href]:not(:has(h3, img, svg)) { color: var(--b-accent) !important; text-decoration: none !important; border-bottom: 1px solid rgba(185, 211, 106, .4); }
+  #center_col :is(li, p, span, b, strong) > a[href]:not(:has(h3, img, svg)):hover { border-bottom-color: var(--b-accent); }
+
+  /* A faint lime glow behind the page, so it does not read as a flat Google dark. */
+  html { background-image: radial-gradient(1100px 520px at 88% -8%, rgba(185, 211, 106, .07), transparent 62%), radial-gradient(900px 480px at -6% 4%, rgba(120, 140, 255, .05), transparent 60%) !important; background-attachment: fixed !important; background-repeat: no-repeat !important; }
+  #center_col .kp-wholepage, #rhs { color: var(--b-text); }
+}
+`;
+
+// Hidden in every theme. The first lines are the blocks Google gives stable ids
+// or attributes; anything else is found by its heading in GOOGLE_STRIP below.
+const STRIP = `
+#rhs, #brs, #bres, #tads, #tadsb, #bottomads, #taw, #footcnt, #fbar, #gb, #gbw,
+div.related-question-pair, div[data-initq], [jsname="Cpkphb"], [data-text-ad], div[aria-label="Ads"],
+a[href*="udm=50"], [aria-label*="AI Mode" i], [data-attrid*="AIOverview" i] { display: none !important; }
+`;
+
+// Google paints its dark theme with a handful of exact greys and blues behind
+// obfuscated class names. This swaps those exact colours for Browsery's, wherever
+// they appear, so the page follows Google's markup changes instead of fighting
+// them. Runs in the page's own sandbox (no page script can see or stop it).
+export const GOOGLE_RECOLOR = `
+(() => {
+  if (window.__browseryRecolor) return;
+  if (!window.matchMedia('(prefers-color-scheme: dark)').matches) return;
+  window.__browseryRecolor = true;
+  const BG = { '32,33,36': '#101217', '41,42,45': '#161920', '48,49,52': '#1a1d24', '60,64,67': '#262b35', '23,23,23': '#101217', '18,18,18': '#101217', '28,28,30': '#161920' };
+  const FG = { '232,234,237': '#e9ecf1', '189,193,198': '#c8cfda', '154,160,166': '#98a2b3', '138,180,248': '#b9d36a', '153,195,255': '#b9d36a', '197,138,249': '#9fb27a' };
+  const LINE = { '60,64,67': '#262b35', '95,99,104': '#343b48', '48,49,52': '#1f232b' };
+  const SKIP = new Set(['script', 'style', 'link', 'meta', 'head', 'title', 'noscript', 'img', 'video', 'canvas', 'picture', 'source', 'path', 'g', 'circle', 'rect', 'defs', 'use']);
+  const seen = new WeakSet();
+  const key = value => { const m = /^rgba?\\((\\d+), (\\d+), (\\d+)(?:, ([\\d.]+))?\\)$/.exec(value || ''); return m && (m[4] === undefined || m[4] === '1') ? m[1] + ',' + m[2] + ',' + m[3] : null; };
+  const set = (el, prop, value) => { try { el.style.setProperty(prop, value, 'important'); } catch (e) {} };
+  function paint(el) {
+    if (!el || el.nodeType !== 1 || seen.has(el) || SKIP.has(el.localName)) return;
+    seen.add(el);
+    let cs; try { cs = window.getComputedStyle(el); } catch (e) { return; }
+    const bg = BG[key(cs.backgroundColor)]; if (bg) set(el, 'background-color', bg);
+    const fg = FG[key(cs.color)]; if (fg) set(el, 'color', fg);
+    for (const side of ['Top', 'Right', 'Bottom', 'Left']) {
+      if (parseFloat(cs['border' + side + 'Width']) > 0) {
+        const line = LINE[key(cs['border' + side + 'Color'])]; if (line) set(el, 'border-' + side.toLowerCase() + '-color', line);
+      }
+    }
+  }
+  const queue = [];
+  let scheduled = false;
+  function flush() {
+    scheduled = false;
+    const started = Date.now();
+    while (queue.length && Date.now() - started < 12) paint(queue.shift());
+    if (queue.length) { scheduled = true; window.setTimeout(flush, 16); }
+  }
+  function enqueue(node) {
+    if (!node || node.nodeType !== 1) return;
+    queue.push(node);
+    for (const child of node.querySelectorAll('*')) queue.push(child);
+    if (!scheduled) { scheduled = true; window.setTimeout(flush, 16); }
+  }
+  const root = document.documentElement;
+  enqueue(root);
+  new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) enqueue(node); }).observe(root, { childList: true, subtree: true });
+})();
+`;
+
+export const GOOGLE_SKIN = GOOGLE_SKIN_DARK + STRIP;
+
+// Page-side clean-up for what the rules above cannot name: Google's block
+// headings change with the question, and its tabs are links. Hides every tab but
+// Web, Images and Videos (by where the link goes, so it works in any language) and,
+// on the web view, any block under an AI / panel / "related" heading, climbing no
+// higher than a block that holds no web results of its own. Runs again when the
+// page adds nodes.
+export const GOOGLE_STRIP = `
+(() => {
+  if (window.__browseryStrip) return;
+  window.__browseryStrip = true;
+  const KEEP_UDM = ['14', 'web', '2', '7'];
+  const KEEP_TBM = ['isch', 'vid'];
+  const HEADINGS = /^(AI Overview|AI Mode|Dive deeper in AI Mode|Web Guide|People also ask|People also search for|Others searched for|Related searches|Searches related to .+|Related questions|Top stories|Things to know|Discussions and forums|Forums|Perspectives|Short videos|Videos|Images|Popular products|Products|Shopping|Related products|Latest from .+|From sources across the web|Find results on|Sponsored|Ads|Visual stories|Explore brands|Quick answer|Feedback)$/i;
+  const STOP = ['rso', 'center_col', 'res', 'search', 'rcnt', 'botstuff', 'main', 'cnt', 'topstuff', 'rhs'];
+  const hide = el => { try { el.style.setProperty('display', 'none', 'important'); } catch (e) {} };
+  const params = new URL(location.href).searchParams;
+  const view = params.get('udm') || params.get('tbm') || '';
+  const webView = !view || view === '14' || view === 'web';
+
+  function tabs() {
+    for (const a of document.querySelectorAll('#hdtb a[href], #hdtb-msb a[href]')) {
+      let u; try { u = new URL(a.href, location.href); } catch (e) { continue; }
+      if (u.pathname !== '/search' || !u.searchParams.get('q')) continue;
+      const udm = u.searchParams.get('udm'), tbm = u.searchParams.get('tbm');
+      if (udm ? KEEP_UDM.includes(udm) : (tbm && KEEP_TBM.includes(tbm))) continue;
+      let node = a;
+      while (node.parentElement && node.parentElement.children.length === 1 && node.parentElement.id !== 'hdtb-msb' && node.parentElement.id !== 'hdtb') node = node.parentElement;
+      hide(node);
+    }
+    for (const el of document.querySelectorAll('#hdtb-msb [role="button"], #hdtb-msb [aria-haspopup]')) {
+      if (el.id !== 'hdtb-tls' && /^more$/i.test((el.textContent || '').trim())) hide(el);
+    }
+  }
+
+  const organic = el => el.querySelectorAll('a h3').length;
+  function blocks() {
+    for (const heading of document.querySelectorAll('h1, h2, h4, [role="heading"], [aria-level]')) {
+      if (heading.closest('a, #hdtb, #appbar, #searchform') || !heading.closest('#center_col, #rso, #res, #botstuff, #topstuff') || !(heading.offsetParent || heading.getClientRects().length)) continue;
+      const text = (heading.textContent || '').trim();
+      if (!text || text.length > 60 || !HEADINGS.test(text)) continue;
+      let node = heading;
+      while (node.parentElement && !STOP.includes(node.parentElement.id) && node.parentElement !== document.body && organic(node.parentElement) === organic(node) && !node.parentElement.querySelector('#rso, #hdtb, #searchform, #botstuff, #rhs')) node = node.parentElement;
+      if (node !== heading || organic(node) === 0) hide(node);
+    }
+  }
+
+  function run() { try { tabs(); if (webView) blocks(); } catch (e) {} }
+  let timer = 0;
+  const later = () => { if (!timer) timer = window.setTimeout(() => { timer = 0; run(); }, 120); };
+  run();
+  new MutationObserver(later).observe(document.documentElement, { childList: true, subtree: true });
+})();
+`;

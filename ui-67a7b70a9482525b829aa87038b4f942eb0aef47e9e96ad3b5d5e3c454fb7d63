@@ -1,0 +1,127 @@
+{
+ "id": "starfall-ruins",
+ "w": 3840,
+ "h": 1920,
+ "encode": 1.0,
+ "camera": {
+  "fov": 44,
+  "near": 0.1,
+  "far": 60000.0,
+  "pos": [
+   0.0,
+   1.7237,
+   -0.0
+  ],
+  "dir": [
+   0.0,
+   0.1425,
+   -0.9898
+  ],
+  "up": [
+   0.0,
+   0.9898,
+   0.1425
+  ]
+ },
+ "lights": [
+  {
+   "name": "starlight",
+   "kind": "sun",
+   "dir": [
+    -0.31,
+    0.4226,
+    0.8517
+   ],
+   "color": [
+    0.6,
+    0.7,
+    1.0
+   ],
+   "strength": 0.03
+  }
+ ],
+ "moon": null,
+ "water": null,
+ "fog": {
+  "density": 0.00011,
+  "height": 40.0,
+  "falloff": 0.004,
+  "color": "#3a5080",
+  "tint": 0.4,
+  "glow": 0.6,
+  "glow_color": "#9db0dc"
+ },
+ "layers": {
+  "stars": {
+   "twinkle": 1.0
+  },
+  "meteors": {
+   "every": 2.5
+  },
+  "particles": {
+   "kind": "ember",
+   "count": 80,
+   "colors": [
+    "#a8d8ff",
+    "#ffffff"
+   ]
+  },
+  "sway": {
+   "strength": 0.4
+  }
+ },
+ "aux": {
+  "r": "logdepth",
+  "g": "water",
+  "b": "sway",
+  "a": "moon",
+  "near": 0.25,
+  "far": 60000.0
+ },
+ "grade": {
+  "bake_exposure": 24.0
+ },
+ "palette": [
+  [
+   "#121820",
+   0.2836371527777778
+  ],
+  [
+   "#525e95",
+   0.26171875
+  ],
+  [
+   "#39467d",
+   0.2513020833333333
+  ],
+  [
+   "#7d89bb",
+   0.1404079861111111
+  ],
+  [
+   "#272e43",
+   0.033637152777777776
+  ],
+  [
+   "#4e4f60",
+   0.029296875
+  ]
+ ],
+ "tiers": [
+  4,
+  2,
+  1
+ ],
+ "horizon": [
+  0.20654,
+  0.29077,
+  1.01587
+ ],
+ "theme": "#9db4ff",
+ "exposure": 24.0,
+ "render": {
+  "samples": 192,
+  "seconds": 18.0,
+  "device": "OPTIX"
+ }
+}

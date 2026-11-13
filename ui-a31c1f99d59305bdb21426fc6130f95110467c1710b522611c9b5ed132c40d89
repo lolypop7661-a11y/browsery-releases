@@ -1,0 +1,6 @@
+(function(){'use strict';
+var w=window,noop=function(){},queued=(w.apstag&&w.apstag._Q)||[];
+var fetchBids=function(cfg,cb){if(typeof cb==='function')setTimeout(function(){try{cb([])}catch(e){}},1)};
+w.apstag={_Q:[],_getSlotIdToSlotMapping:function(){return {}},debug:noop,deleteId:noop,fetchBids:fetchBids,init:noop,punt:noop,renderImp:noop,rpa:noop,setDisplayBids:noop,targetingKeys:function(){return []},thirdPartyData:{},updateId:noop};
+queued.forEach(function(entry){try{if(entry[0]==='f')fetchBids.apply(null,entry[1])}catch(e){}});
+})();

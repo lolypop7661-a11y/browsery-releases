@@ -1,0 +1,25 @@
+(function(){'use strict';
+var noop=function(){},self=function(){return this},nul=function(){return null},arr=function(){return []},str=function(){return ''};
+function Slot(){}var p=Slot.prototype;
+['addService','clearCategoryExclusions','clearTargeting','defineSizeMapping','set','setCategoryExclusion','setClickUrl','setCollapseEmptyDiv','setConfig','setTargeting','updateTargetingFromMap','getSlotId'].forEach(function(k){p[k]=self});
+['get','getResponseInformation'].forEach(function(k){p[k]=nul});
+['getAdUnitPath','getAttributeKeys','getCategoryExclusions','getTargeting','getTargetingKeys'].forEach(function(k){p[k]=arr});
+p.getDomId=str;p.getSlotElementId=str;
+function Passback(){}var q=Passback.prototype;q.display=noop;q.get=nul;['set','setClickUrl','setTagForChildDirectedTreatment','setTargeting','updateTargetingFromMap'].forEach(function(k){q[k]=self});
+function SizeMap(){}SizeMap.prototype.addSize=self;SizeMap.prototype.build=nul;
+var pubads={};
+['addEventListener','clearCategoryExclusions','clearTagForChildDirectedTreatment','clearTargeting','set','setCategoryExclusion','setCookieOptions','setForceSafeFrame','setLocation','setPublisherProvidedId','setPrivacySettings','setRequestNonPersonalizedAds','setSafeFrameConfig','setTagForChildDirectedTreatment','setTargeting','setVideoContent'].forEach(function(k){pubads[k]=self});
+['clear','collapseEmptyDivs','disableInitialLoad','display','enableAsyncRendering','enableLazyLoad','enableSingleRequest','enableSyncRendering','enableVideoAds','refresh','removeEventListener','setCentering','updateCorrelator'].forEach(function(k){pubads[k]=noop});
+pubads.get=nul;['getAttributeKeys','getTargeting','getTargetingKeys','getSlots'].forEach(function(k){pubads[k]=arr});
+pubads.isInitialLoadDisabled=function(){return true};
+pubads.defineOutOfPagePassback=pubads.definePassback=function(){return new Passback()};
+var gt=window.googletag||{},pending=Array.isArray(gt.cmd)?gt.cmd:[];
+gt.apiReady=true;gt.pubadsReady=true;gt.cmd=[];gt.cmd.push=function(fn){try{fn()}catch(e){}return 1};
+gt.companionAds=function(){return{addEventListener:self,enableSyncLoading:noop,setRefreshUnfilledSlots:noop}};
+gt.content=function(){return{addEventListener:self,setContent:noop}};
+gt.defineSlot=gt.defineOutOfPageSlot=function(){return new Slot()};
+gt.destroySlots=gt.disablePublisherConsole=gt.display=gt.enableServices=gt.setAdIframeTitle=noop;
+gt.getVersion=str;gt.pubads=function(){return pubads};gt.sizeMapping=function(){return new SizeMap()};
+gt.enums={OutOfPageFormat:{REWARDED:'REWARDED',INTERSTITIAL:'INTERSTITIAL',TOP_ANCHOR:'TOP_ANCHOR',BOTTOM_ANCHOR:'BOTTOM_ANCHOR'}};
+window.googletag=gt;while(pending.length){try{pending.shift()()}catch(e){}}
+})();

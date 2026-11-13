@@ -1,0 +1,79 @@
+/* Browsery 2.1 design tokens. The only authored colour is --accent (set by
+   applyTheme in main.jsx, after normalising); every other colour here is
+   derived from it. Nothing outside this file names a hue. */
+:root {
+  color-scheme: dark;
+  --accent: #66dcff;
+
+  /* neutral bases: no hue of their own */
+  --base: light-dark(#f3f3f3, #141414);
+  --ink: light-dark(#000000, #ffffff);
+  --accent-deep: color-mix(in srgb, var(--accent) 70%, #000000);
+
+  /* surfaces: enough accent in the base that each theme reads as its own colour */
+  --frame: color-mix(in srgb, var(--accent) 16%, var(--base));
+  --surface: color-mix(in srgb, var(--accent) 9%, light-dark(#ffffff, #1b1b1c));
+  --surface-2: color-mix(in srgb, var(--accent) 12%, light-dark(#fafafa, #232324));
+  --field: color-mix(in srgb, var(--accent) 5%, light-dark(#ffffff, #0e0e0f));
+  --page: light-dark(#ffffff, #1b1b1c);
+
+  /* text: a shade of the accent, never pure black or white */
+  --text: light-dark(color-mix(in srgb, #000000 70%, var(--accent-deep)), color-mix(in srgb, #ffffff 80%, var(--accent)));
+  --text-2: color-mix(in srgb, var(--text) 72%, transparent);
+  --muted: color-mix(in srgb, var(--text) 52%, transparent);
+  --on-accent: light-dark(#ffffff, #000000);
+
+  /* lines and states */
+  --tint-2: color-mix(in srgb, var(--text) 16%, transparent);
+  --border: color-mix(in srgb, var(--tint-2) 50%, transparent);
+  --hover: color-mix(in srgb, currentColor 5%, transparent);
+  --active: color-mix(in srgb, currentColor 10%, transparent);
+  --selected: color-mix(in srgb, var(--text) 9%, transparent);
+  --focus: color-mix(in srgb, var(--accent) 55%, transparent);
+
+  /* materials */
+  --underlay: light-dark(rgba(255, 255, 255, .6), rgba(255, 255, 255, .15));
+  --blur: blur(24px);
+  --shadow-float: 0 30px 140px -15px rgba(0, 0, 0, .6);
+  --shadow-small: 0 3px 8px rgba(0, 0, 0, .24);
+  --shadow-card: 0 0 0 1px light-dark(rgba(0, 0, 0, .07), rgba(0, 0, 0, .55)), 0 12px 32px -14px rgba(0, 0, 0, .5);
+
+  /* shape */
+  --radius: 7px;
+  --squircle: 2.3;
+  --r: calc(var(--radius) * var(--squircle));            /* ≈16px: cards, popovers */
+  --r-inner: max(5px, calc((var(--radius) - 2px) * var(--squircle))); /* ≈11.5px: tabs, fields, buttons */
+  --r-pill: 999px;
+
+  /* sizes */
+  --bar-h: 38px;
+  --btn-h: 32px;
+  --sidebar-w: 236px;
+  --rail-w: 52px;
+  --s1: 4px; --s2: 6px; --s3: 8px; --s4: 12px; --s5: 16px;
+
+  /* motion */
+  --ease: cubic-bezier(0.075, 0.82, 0.165, 1);
+  --t-fast: .16s;
+  --t-base: .24s;
+  --spring-pop: linear(0, 0.12 4%, 0.372 8%, 0.638 13%, 0.853 17%, 0.996 21%, 1.071 25%, 1.094 29%, 1.086 33%, 1.063 38%, 1.038 42%, 1.016 46%, 1.002 50%, 0.994 54%, 0.991 58%, 0.992 63%, 0.994 67%, 0.996 71%, 0.998 75%, 1 79%, 1.001 83%, 1.001 88%, 1.001 92%, 1.001 96%, 1);
+  --spring-panel: linear(0, 0.099 4%, 0.3 8%, 0.51 13%, 0.689 17%, 0.822 21%, 0.912 25%, 0.967 29%, 0.997 33%, 1.011 38%, 1.015 42%, 1.014 46%, 1.012 50%, 1.008 54%, 1.005 58%, 1.003 63%, 1.002 67%, 1.001 71%, 1 75%, 1 79%, 1 83%, 1 88%, 1 92%, 1 96%, 1);
+  --spring-list: linear(0, 0.067 4%, 0.205 8%, 0.358 13%, 0.499 17%, 0.619 21%, 0.715 25%, 0.79 29%, 0.848 33%, 0.89 38%, 0.921 42%, 0.944 46%, 0.96 50%, 0.972 54%, 0.981 58%, 0.986 63%, 0.991 67%, 0.993 71%, 0.995 75%, 0.997 79%, 0.998 83%, 0.999 88%, 0.999 92%, 0.999 96%, 1);
+  --d-pop: .42s;
+  --d-panel: .5s;
+  --d-list: .4s;
+  --stagger: .03s;
+  --press: .98;
+
+  --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+:root[data-color-mode="light"] { color-scheme: light; }
+:root[data-corners="soft"] { --radius: 10px; }
+:root[data-corners="square"] { --radius: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 0s; --t-base: 0s; --d-pop: 0s; --d-panel: 0s; --d-list: 0s; --stagger: 0s; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --blur: none; --underlay: light-dark(rgba(255, 255, 255, .96), rgba(40, 40, 40, .96)); }
+}

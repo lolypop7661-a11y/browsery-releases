@@ -1,0 +1,58 @@
+// Parent side of the page actor. Hands page details to the Browsery window as
+// a DOM event on the tab's <browser> (webview.js turns it into Electron's
+// dom-ready / page-favicon-updated events), and serves Browsery's search pages.
+const VIRTUAL_MARK = '#browsery-virtual=';
+
+export class BrowseryPageParent extends JSWindowActorParent {
+  get shell() {
+    const browser = this.browsingContext?.top?.embedderElement;
+    return { browser, internal: browser?.ownerDocument?.defaultView?.__browseryInternal || null };
+  }
+
+  isBrowseryPage() {
+    if (this.browsingContext?.parent) return false;
+    const address = String(this.browsingContext?.currentWindowGlobal?.documentURI?.spec || '');
+    return address.startsWith('data:text/html') && address.includes(VIRTUAL_MARK);
+  }
+
+  receiveMessage(message) {
+    const { browser, internal } = this.shell;
+    switch (message.name) {
+      case 'Browsery:Loaded': {
+        if (!browser?.ownerDocument) return undefined;
+        const detail = { icons: Array.isArray(message.data?.icons) ? message.data.icons.map(String) : [], title: String(message.data?.title || '') };
+        browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('BrowseryPageLoaded', { detail }));
+        return undefined;
+      }
+      case 'Browsery:LoginCapture': {
+        if (!browser?.ownerDocument || this.browsingContext?.parent) return undefined;
+        const data = message.data || {};
+        // The page's real origin comes from the parent process, not the message.
+        let origin = '';
+        try { origin = this.browsingContext.currentWindowGlobal.documentPrincipal.originNoSuffix; } catch {}
+        const detail = { origin: String(origin || '').slice(0, 300), username: String(data.username || '').slice(0, 256), password: String(data.password || '').slice(0, 1024) };
+        if (!/^https?:\/\//.test(detail.origin) || !detail.username || !detail.password) return undefined;
+        browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-login-capture', { detail, bubbles: true }));
+        return undefined;
+      }
+      case 'Browsery:LinkHover':
+      case 'Browsery:Glance': {
+        if (!browser?.ownerDocument || this.browsingContext?.parent) return undefined;
+        const url = String(message.data?.url || '').slice(0, 2000);
+        if (url && !/^(https?|mailto|about):/i.test(url)) return undefined;
+        const name = message.name === 'Browsery:Glance' ? 'browsery-glance' : 'browsery-link-hover';
+        const point = message.name === 'Browsery:Glance' ? { x: Number(message.data?.x) || 0, y: Number(message.data?.y) || 0 } : {};
+        browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent(name, { detail: { url, ...point }, bubbles: true }));
+        return undefined;
+      }
+      case 'Browsery:SearchCall':
+        if (!internal || !this.isBrowseryPage()) throw new Error('Not a Browsery page.');
+        return internal.searchCall(String(message.data?.path || ''), String(message.data?.search || ''));
+      case 'Browsery:Open':
+        if (internal && this.isBrowseryPage()) internal.openFromPage(browser, String(message.data?.url || ''));
+        return undefined;
+      default:
+        return undefined;
+    }
+  }
+}

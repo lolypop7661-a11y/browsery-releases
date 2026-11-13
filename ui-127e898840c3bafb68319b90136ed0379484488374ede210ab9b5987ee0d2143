@@ -1,0 +1,11 @@
+(function(){'use strict';
+function Detector(){}var p=Detector.prototype;
+p.check=function(){return true};p.clearEvent=function(){};p.emitEvent=function(){};
+p.on=function(detected,fn){if(!detected&&typeof fn==='function')setTimeout(fn,1);return this};
+p.onDetected=function(){return this};
+p.onNotDetected=function(fn){if(typeof fn==='function')setTimeout(fn,1);return this};
+p.setOption=function(){return this};
+var inst=new Detector();
+['FuckAdBlock','BlockAdBlock','SniffAdBlock'].forEach(function(k){window[k]=Detector});
+['fuckAdBlock','blockAdBlock','sniffAdBlock'].forEach(function(k){try{Object.defineProperty(window,k,{value:inst,configurable:true,writable:true})}catch(e){window[k]=inst}});
+})();

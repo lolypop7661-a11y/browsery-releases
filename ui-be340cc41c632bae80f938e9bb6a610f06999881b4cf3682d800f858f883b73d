@@ -1,0 +1,22 @@
+New tab scenes
+--------------
+Drawn live on this PC with three.js (https://threejs.org, MIT licence; the copy
+used is ui/vendor/three.module.js). Code: ui/scenes/living.
+
+props/   Temples, gates, trees, lanterns, figures and the rest were modelled and
+         rendered by the Browsery developer in Blender (tools/render/props.py) as
+         an albedo and a normal map each, so every scene can relight them.
+tex/moon.jpg
+         From the moon map by Solar System Scope / INOVE
+         (https://www.solarsystemscope.com/textures/), CC BY 4.0
+         (https://creativecommons.org/licenses/by/4.0/), resized.
+tex/signs.webp, text/
+         Japanese shop signs and poster titles set in Noto Sans CJK and Noto Serif
+         CJK (© Google, SIL Open Font License 1.1) and baked into images
+         (tools/render/signs.py, tools/render/retro_text.py).
+posters/, thumbs/
+         Frames of the scenes themselves, shown when WebGL is unavailable and in
+         the scene picker.
+
+Everything else (skies, clouds, water, grass, fog, light) is generated from
+noise and simple shapes while the scene runs; nothing is downloaded.

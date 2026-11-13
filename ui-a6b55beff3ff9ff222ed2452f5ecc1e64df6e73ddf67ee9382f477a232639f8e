@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" id="browsery-window" windowtype="browsery:shell" icon="browsery" customtitlebar="true" chromemargin="0,2,2,2" width="1440" height="900" screenX="80" screenY="60" persist="screenX screenY width height sizemode">
+<head>
+  <meta charset="utf-8">
+  <title>Browsery</title>
+  <link rel="stylesheet" href="chrome://global/skin/design-system/tokens-platform.css">
+  <link rel="stylesheet" href="chrome://global/skin/popup.css">
+  <link rel="stylesheet" href="chrome://global/skin/menu.css">
+  <link rel="stylesheet" href="chrome://global/skin/menulist.css">
+  <link rel="stylesheet" href="app/tokens.css">
+  <link rel="stylesheet" href="shell.css">
+  <link rel="stylesheet" href="app/main.css">
+  <script src="chrome://global/content/globalOverlay.js"></script>
+  <script src="platform.js"></script>
+</head>
+<body>
+  <div id="boot" aria-label="Browsery is starting">
+    <div class="boot-center">
+      <svg class="boot-mark" width="112" height="112" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><mask id="boot-cuts" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/>
+          <g fill="#000"><rect x="32" y="30.3" width="34" height="3.4" transform="rotate(-90 32 32)"/><rect x="32" y="30.3" width="34" height="3.4" transform="rotate(28 32 32)"/><rect x="32" y="30.3" width="34" height="3.4" transform="rotate(152 32 32)"/></g></mask></defs>
+        <circle class="boot-ring" cx="32" cy="32" r="26.2" fill="none" stroke="currentColor" stroke-width="7.2" mask="url(#boot-cuts)"/>
+        <g class="boot-orbit"><ellipse cx="31.3" cy="31.3" rx="21.4" ry="6.5" transform="rotate(-30 31.3 31.3)" fill="none" stroke="#b9d36a" stroke-width="1.15"/></g>
+      </svg>
+      <div class="boot-word" aria-label="Browsery"><i style="--d:0.350s">B</i><i style="--d:0.395s">r</i><i style="--d:0.440s">o</i><i style="--d:0.485s">w</i><i style="--d:0.530s">s</i><i style="--d:0.575s">e</i><i style="--d:0.620s">r</i><i style="--d:0.665s">y</i></div>
+      <div id="boot-message" class="boot-message" aria-live="polite"></div>
+    </div>
+  </div>
+  <div id="root"></div>
+</body>
+</html>

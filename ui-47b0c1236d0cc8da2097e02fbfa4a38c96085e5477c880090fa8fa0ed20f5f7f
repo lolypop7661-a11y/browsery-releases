@@ -1,0 +1,38 @@
+/* Browsery v2.1 window: the engine's <browser> inside each <webview>, and the
+   loading screen shown while the engine and the interface start. */
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--frame); }
+#root { height: 100%; }
+webview { display: flex; position: relative; min-width: 0; min-height: 0; }
+webview > browser.browsery-guest { flex: 1 1 auto; width: 100%; height: 100%; min-width: 0; min-height: 0; border: 0; background: var(--page); }
+#mainPopupSet { position: fixed; width: 0; height: 0; overflow: hidden; }
+:root[inDOMFullscreen] .v2-sidebar, :root[inDOMFullscreen] .v2-topbar { display: none !important; }
+:root[inDOMFullscreen] .v2-main { padding: 0 !important; }
+:root[inDOMFullscreen] .v2-card { border-radius: 0 !important; box-shadow: none !important; }
+
+/* Loading screen: the same tinted frame as the window, so the app simply
+   settles into place. Tokens from app/tokens.css. */
+#boot {
+  position: fixed; inset: 0; z-index: 1000;
+  display: grid; place-items: center;
+  background: var(--frame);
+  color: var(--text);
+  font: 13px/1.4 var(--font);
+  -moz-window-dragging: drag;
+  transition: opacity .5s var(--ease), transform .6s var(--ease);
+  will-change: transform, opacity;
+}
+#boot.is-done { opacity: 0; transform: scale(1.02); pointer-events: none; }
+.boot-center { position: relative; display: grid; justify-items: center; gap: 22px; will-change: transform, opacity; animation: boot-in .9s var(--spring-pop) both; }
+#boot.is-done .boot-center { animation: boot-out .5s var(--ease) both; }
+.boot-mark { overflow: visible; color: var(--text); }
+.boot-orbit { transform-origin: 31.3px 31.3px; animation: boot-planet .9s var(--spring-pop) .5s both; }
+.boot-ring { stroke-dasharray: 165; stroke-dashoffset: 165; animation: boot-ring 1.1s var(--ease) .12s forwards; }
+.boot-word { display: flex; font-size: 22px; font-weight: 500; letter-spacing: -.01em; }
+.boot-word i { display: inline-block; font-style: normal; opacity: 0; transform: translateY(.5em) scale(.8); transform-origin: bottom left; animation: boot-word .55s var(--spring-pop) forwards; animation-delay: var(--d, 0s); will-change: transform, opacity; }
+.boot-message { min-height: 16px; max-width: 420px; color: var(--muted); font-size: 12px; text-align: center; }
+@keyframes boot-ring { to { stroke-dashoffset: 0; } }
+@keyframes boot-planet { from { transform: scale(.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes boot-word { to { opacity: 1; transform: none; } }
+@keyframes boot-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes boot-out { to { opacity: 0; transform: scale(.94); } }
+@media (prefers-reduced-motion: reduce) { #boot, #boot *, #boot *::before { animation-duration: 0s !important; transition-duration: 0s !important; } .boot-ring { stroke-dashoffset: 0; } .boot-word i { opacity: 1; transform: none; } }
