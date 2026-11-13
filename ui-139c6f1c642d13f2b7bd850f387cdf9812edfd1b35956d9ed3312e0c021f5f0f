@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="shell.css">
   <link rel="stylesheet" href="app/main.css">
   <script src="chrome://global/content/globalOverlay.js"></script>
+  <script src="guard.js"></script>
   <script src="platform.js"></script>
 </head>
 <body>

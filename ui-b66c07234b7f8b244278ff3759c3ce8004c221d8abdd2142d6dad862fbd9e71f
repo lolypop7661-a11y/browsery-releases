@@ -42,7 +42,7 @@
   ));
   var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-  // ../browsery-gecko/platform/shims/buffer.js
+  // browsery-gecko/platform/shims/buffer.js
   function toBase64(bytes) {
     let binary = "";
     for (let i = 0; i < bytes.length; i += 32768) binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
@@ -57,7 +57,7 @@
   }
   var encoder, decoder, Buffer2;
   var init_buffer = __esm({
-    "../browsery-gecko/platform/shims/buffer.js"() {
+    "browsery-gecko/platform/shims/buffer.js"() {
       init_globals();
       encoder = new TextEncoder();
       decoder = new TextDecoder();
@@ -126,10 +126,10 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/globals.js
+  // browsery-gecko/platform/shims/globals.js
   var platform, process;
   var init_globals = __esm({
-    "../browsery-gecko/platform/shims/globals.js"() {
+    "browsery-gecko/platform/shims/globals.js"() {
       init_buffer();
       platform = (() => {
         try {
@@ -149,7 +149,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/fs.js
+  // browsery-gecko/platform/shims/fs.js
   var fs_exports = {};
   __export(fs_exports, {
     BUNDLED_ROOT: () => BUNDLED_ROOT,
@@ -237,7 +237,7 @@
   }
   var DATA_ROOT, BUNDLED_ROOT, files, bundled, realDir, pending, enoent, eexist, nameOf, isData, persist, fs_default;
   var init_fs = __esm({
-    "../browsery-gecko/platform/shims/fs.js"() {
+    "browsery-gecko/platform/shims/fs.js"() {
       init_globals();
       init_buffer();
       DATA_ROOT = "/browsery-data";
@@ -259,7 +259,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/path.js
+  // browsery-gecko/platform/shims/path.js
   var path_exports = {};
   __export(path_exports, {
     basename: () => basename,
@@ -275,7 +275,7 @@
   });
   var normalize, sep, join, resolve, dirname, basename, extname, isAbsolute, posix, path_default;
   var init_path = __esm({
-    "../browsery-gecko/platform/shims/path.js"() {
+    "browsery-gecko/platform/shims/path.js"() {
       init_globals();
       normalize = (value) => {
         const absolute = String(value).startsWith("/");
@@ -310,7 +310,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/scrypt.js
+  // browsery-gecko/platform/shims/scrypt.js
   function sha256(data) {
     const bytes = data instanceof Uint8Array ? data : new Uint8Array(data);
     const length = bytes.length;
@@ -472,7 +472,7 @@
   }
   var K;
   var init_scrypt = __esm({
-    "../browsery-gecko/platform/shims/scrypt.js"() {
+    "browsery-gecko/platform/shims/scrypt.js"() {
       init_globals();
       K = new Uint32Array([
         1116352408,
@@ -543,7 +543,7 @@
     }
   });
 
-  // ../browsery-gecko/platform/shims/crypto.js
+  // browsery-gecko/platform/shims/crypto.js
   var crypto_exports = {};
   __export(crypto_exports, {
     default: () => crypto_default,
@@ -575,7 +575,7 @@ ${error?.stack || ""}
   }
   var randomUUID, randomBytes, crypto_default;
   var init_crypto = __esm({
-    "../browsery-gecko/platform/shims/crypto.js"() {
+    "browsery-gecko/platform/shims/crypto.js"() {
       init_globals();
       init_buffer();
       init_scrypt();
@@ -585,9 +585,9 @@ ${error?.stack || ""}
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/local-account.cjs
+  // Browsery-windows-build-1.0.15/electron/local-account.cjs
   var require_local_account = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/local-account.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -810,7 +810,7 @@ ${error?.stack || ""}
     }
   });
 
-  // ../browsery-gecko/platform/shims/os.js
+  // browsery-gecko/platform/shims/os.js
   var os_exports = {};
   __export(os_exports, {
     EOL: () => EOL,
@@ -823,7 +823,7 @@ ${error?.stack || ""}
   });
   var hostname, platform2, homedir, freemem, totalmem, EOL, os_default;
   var init_os = __esm({
-    "../browsery-gecko/platform/shims/os.js"() {
+    "browsery-gecko/platform/shims/os.js"() {
       init_globals();
       hostname = () => {
         try {
@@ -847,9 +847,9 @@ ${error?.stack || ""}
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/account-server.cjs
+  // Browsery-windows-build-1.0.15/electron/account-server.cjs
   var require_account_server = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/account-server.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -976,7 +976,7 @@ ${error?.stack || ""}
     }
   });
 
-  // ../browsery-gecko/platform/shims/url.js
+  // browsery-gecko/platform/shims/url.js
   var url_exports = {};
   __export(url_exports, {
     URL_: () => URL_,
@@ -992,16 +992,16 @@ ${error?.stack || ""}
   }
   var URL_, url_default;
   var init_url = __esm({
-    "../browsery-gecko/platform/shims/url.js"() {
+    "browsery-gecko/platform/shims/url.js"() {
       init_globals();
       URL_ = URL;
       url_default = { domainToASCII, URL };
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/surrogates.cjs
+  // Browsery-windows-build-1.0.15/electron/surrogates.cjs
   var require_surrogates = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/surrogates.cjs"(exports, module) {
       init_globals();
       var SURROGATES2 = {
         // Google Publisher Tag (gpt.js)
@@ -1112,9 +1112,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/adblocker.cjs
+  // Browsery-windows-build-1.0.15/electron/adblocker.cjs
   var require_adblocker = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/adblocker.cjs"(exports, module) {
       "use strict";
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -1840,9 +1840,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
+  // Browsery-windows-build-1.0.15/electron/link-cleaner.cjs
   var require_link_cleaner = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/link-cleaner.cjs"(exports, module) {
       init_globals();
       var TRACKING_PARAMS = /* @__PURE__ */ new Set(["fbclid", "gclid", "gclsrc", "dclid", "gbraid", "wbraid", "gad_source", "msclkid", "yclid", "twclid", "ttclid", "li_fat_id", "igshid", "igsh", "mc_eid", "mc_cid", "_hsenc", "_hsmi", "__hssc", "__hstc", "__hsfp", "hsctatracking", "mkt_tok", "oly_anon_id", "oly_enc_id", "vero_id", "vero_conv", "wickedid", "rb_clickid", "s_cid", "srsltid", "epik", "_openstat", "ml_subscriber", "ml_subscriber_hash", "ck_subscriber_id", "spm", "scm", "_gl", "trk", "trkCampaign", "sc_campaign", "sc_channel", "sc_content", "sc_medium", "sc_outcome", "sc_geo", "sc_country"]);
       var SITE_TRACKING_PARAMS = [
@@ -1886,7 +1886,7 @@ var inst=new Detector();
     }
   });
 
-  // ../browsery-gecko/platform/shims/electron.js
+  // browsery-gecko/platform/shims/electron.js
   var electron_exports = {};
   __export(electron_exports, {
     app: () => app,
@@ -1942,7 +1942,7 @@ var inst=new Detector();
   }
   var KEY_FILE, key, osProtected, randomKey, safeStorage, app, clipboardHelper, clipboard, electron_default;
   var init_electron = __esm({
-    "../browsery-gecko/platform/shims/electron.js"() {
+    "browsery-gecko/platform/shims/electron.js"() {
       init_globals();
       init_buffer();
       init_fs();
@@ -2021,7 +2021,7 @@ var inst=new Detector();
     }
   });
 
-  // ../browsery-gecko/platform/shims/util.js
+  // browsery-gecko/platform/shims/util.js
   var util_exports = {};
   __export(util_exports, {
     TextDecoder: () => TextDecoderImpl,
@@ -2030,7 +2030,7 @@ var inst=new Detector();
   });
   var TextDecoderImpl, TextEncoderImpl, util_default;
   var init_util = __esm({
-    "../browsery-gecko/platform/shims/util.js"() {
+    "browsery-gecko/platform/shims/util.js"() {
       init_globals();
       TextDecoderImpl = globalThis.TextDecoder;
       TextEncoderImpl = globalThis.TextEncoder;
@@ -2038,9 +2038,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/package.json
+  // Browsery-windows-build-1.0.15/package.json
   var require_package = __commonJS({
-    "../Browsery-windows-build-1.0.15/package.json"(exports, module) {
+    "Browsery-windows-build-1.0.15/package.json"(exports, module) {
       module.exports = {
         name: "browsery-magic-cursor",
         productName: "Browsery",
@@ -2135,9 +2135,9 @@ var inst=new Detector();
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
+  // Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs
   var require_browsery_knowledge = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/browsery-knowledge.cjs"(exports, module) {
       "use strict";
       init_globals();
       var packageVersion = "";
@@ -2491,9 +2491,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/ai-overview.cjs
+  // Browsery-windows-build-1.0.15/electron/ai-overview.cjs
   var require_ai_overview = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/ai-overview.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -3044,9 +3044,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/credentials.cjs
+  // Browsery-windows-build-1.0.15/electron/credentials.cjs
   var require_credentials = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/credentials.cjs"(exports, module) {
       init_globals();
       var { app: app2, safeStorage: safeStorage2, clipboard: clipboard2 } = (init_electron(), __toCommonJS(electron_exports));
       var fs = (init_fs(), __toCommonJS(fs_exports));
@@ -3245,9 +3245,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/global-control.cjs
+  // Browsery-windows-build-1.0.15/electron/global-control.cjs
   var require_global_control = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/global-control.cjs"(exports, module) {
       init_globals();
       var fs = (init_fs(), __toCommonJS(fs_exports));
       var path = (init_path(), __toCommonJS(path_exports));
@@ -3657,9 +3657,9 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // ../Browsery-windows-build-1.0.15/electron/browsery-search.cjs
+  // Browsery-windows-build-1.0.15/electron/browsery-search.cjs
   var require_browsery_search = __commonJS({
-    "../Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
+    "Browsery-windows-build-1.0.15/electron/browsery-search.cjs"(exports, module) {
       init_globals();
       var path = (init_path(), __toCommonJS(path_exports));
       var { randomUUID: randomUUID2 } = (init_crypto(), __toCommonJS(crypto_exports));
@@ -4254,10 +4254,10 @@ ${BROWSERY_KNOWLEDGE}`;
     }
   });
 
-  // platform/index.js
+  // browsery-v2/platform/index.js
   init_globals();
 
-  // ../browsery-gecko/platform/webview.js
+  // browsery-gecko/platform/webview.js
   init_globals();
   var lazy = {};
   ChromeUtils.defineESModuleGetters(lazy, {
@@ -4771,7 +4771,7 @@ ${BROWSERY_KNOWLEDGE}`;
     }).observe(doc.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["src"] });
   }
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   init_globals();
   init_fs();
   init_buffer();
@@ -4783,7 +4783,7 @@ ${BROWSERY_KNOWLEDGE}`;
   var import_ai_overview = __toESM(require_ai_overview());
   var import_credentials = __toESM(require_credentials());
 
-  // ../Browsery-windows-build-1.0.15/electron/adblock-rules.json
+  // Browsery-windows-build-1.0.15/electron/adblock-rules.json
   var adblock_rules_default = {
     version: "2026.10.13.1",
     updatedAt: 17918496e5,
@@ -4999,10 +4999,10 @@ ${BROWSERY_KNOWLEDGE}`;
     ]
   };
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   var import_global_control = __toESM(require_global_control());
 
-  // ../Browsery-windows-build-1.0.15/electron/global-control-config.json
+  // Browsery-windows-build-1.0.15/electron/global-control-config.json
   var global_control_config_default = {
     supabaseUrl: "https://lnowharqxuxnudntqkxc.supabase.co",
     supabaseAnonKey: "sb_publishable_55ywwCbGEGX7U_7sULQkRA_aijy28qY",
@@ -5010,10 +5010,10 @@ ${BROWSERY_KNOWLEDGE}`;
     captchaHost: "lolypop7661-a11y.github.io"
   };
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   init_electron();
 
-  // ../browsery-gecko/platform/permissions.js
+  // browsery-gecko/platform/permissions.js
   init_globals();
   var LABELS = {
     media: "camera or microphone",
@@ -5188,14 +5188,14 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // ../browsery-gecko/platform/updater.js
+  // browsery-gecko/platform/updater.js
   init_globals();
   var lazy2 = {};
   ChromeUtils.defineESModuleGetters(lazy2, {
     FileUtils: "resource://gre/modules/FileUtils.sys.mjs"
   });
   var CHANNEL_NAME = true ? "v2-updates" : "gecko-updates";
-  var CHANNEL = `https://browsery.pages.dev/channel/${CHANNEL_NAME}/`;
+  var CHANNEL_HOME = `https://browsery.pages.dev/channel/${CHANNEL_NAME}/`;
   var RELEASE_PAGE = "https://browsery.pages.dev/download";
   var RECHECK_MS = 4 * 60 * 60 * 1e3;
   var PACKAGE_PREFIX = true ? "BrowseryV2/" : "BrowseryGecko/";
@@ -5217,7 +5217,18 @@ ${permission}`, { origin, permission, decision: "allow" });
   var UI_FILE = new RegExp(`^(?:(?:content|actors|stub)(?:/${UI_SEGMENT})+|chrome\\.manifest|version\\.json|version\\.txt)$`);
   var engineDir = () => Services.dirsvc.get("GreD", Ci.nsIFile);
   var uiRoot = () => PathUtils.join(engineDir().path, "browsery");
-  var uiStage = () => PathUtils.join(engineDir().parent.path, "update", "ui");
+  var updateRoot = () => PathUtils.join(engineDir().parent.path, "update");
+  var uiStage = () => PathUtils.join(updateRoot(), "ui");
+  var uiBackup = () => PathUtils.join(updateRoot(), "ui-backup");
+  var uiSkip = () => PathUtils.join(updateRoot(), "ui-skip.json");
+  var qaChannel = () => {
+    try {
+      const value = Services.env.get("BROWSERY_QA_UPDATE") || "";
+      return /^http:\/\/127\.0\.0\.1:\d+\/$/.test(value) ? value : "";
+    } catch {
+      return "";
+    }
+  };
   var uiPath = (base, file) => PathUtils.join(base, ...file.split("/"));
   function validUiManifest(value) {
     if (!value || typeof value !== "object" || !/^\d+\.\d+\.\d+$/.test(String(value.version || ""))) return false;
@@ -5247,6 +5258,24 @@ ${permission}`, { origin, permission, decision: "allow" });
       await IOUtils.remove(dir, { recursive: true, ignoreAbsent: true });
       return false;
     }
+    const backup = uiBackup();
+    await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
+    await IOUtils.makeDirectory(PathUtils.join(backup, "files"), { createAncestors: true });
+    const kept = [];
+    const added = [];
+    for (const file of ready.changed) {
+      const target = uiPath(uiRoot(), file);
+      if (!await IOUtils.exists(target)) {
+        added.push(file);
+        continue;
+      }
+      const keep = uiPath(PathUtils.join(backup, "files"), file);
+      await IOUtils.makeDirectory(PathUtils.parent(keep), { createAncestors: true, ignoreExisting: true });
+      await IOUtils.copy(target, keep);
+      kept.push(file);
+    }
+    await IOUtils.copy(PathUtils.join(uiRoot(), "build.json"), PathUtils.join(backup, "build.json"));
+    await IOUtils.writeJSON(PathUtils.join(backup, "backup.json"), { fromBuild: local.build, toBuild: manifest.build, files: kept, added, starts: 0, at: Date.now() });
     for (const file of ready.changed) {
       const target = uiPath(uiRoot(), file);
       await IOUtils.makeDirectory(PathUtils.parent(target), { createAncestors: true, ignoreExisting: true });
@@ -5261,12 +5290,75 @@ ${permission}`, { origin, permission, decision: "allow" });
     log3?.(`interface update ${manifest.build} installed (${ready.changed.length} files)`);
     return true;
   }
+  async function confirmInterfaceUpdate(log3) {
+    try {
+      const backup = uiBackup();
+      if (!await IOUtils.exists(backup)) return false;
+      const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
+      const local = await readLocalBuild();
+      if (info && local && true && 202611131536 !== local.build) return false;
+      await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
+      log3?.(`interface update ${info?.toBuild || ""} confirmed`);
+      return true;
+    } catch (error) {
+      log3?.(`interface update confirm: ${error}`);
+      return false;
+    }
+  }
+  async function sweepStaleFiles(log3) {
+    try {
+      const local = await readLocalBuild();
+      if (!local || Object.keys(local.files).length < 50) return 0;
+      try {
+        if (Services.prefs.getCharPref("browsery.ui.sweptBuild", "") === String(local.build)) return 0;
+      } catch {
+      }
+      if (await IOUtils.exists(uiBackup()) || await IOUtils.exists(uiStage())) return 0;
+      const content = PathUtils.join(uiRoot(), "content");
+      const probe = PathUtils.join(content, ".sweep");
+      try {
+        await IOUtils.writeUTF8(probe, "");
+        await IOUtils.remove(probe);
+      } catch {
+        return 0;
+      }
+      let removed = 0;
+      let bytes = 0;
+      const walk = async (folder, prefix, depth) => {
+        if (depth > 8) return;
+        for (const child of await IOUtils.getChildren(folder)) {
+          const name = `${prefix}/${PathUtils.filename(child)}`;
+          const info = await IOUtils.stat(child).catch(() => null);
+          if (!info) continue;
+          if (info.type === "directory") {
+            await walk(child, name, depth + 1);
+            if (name !== "content/assets/space" && !(await IOUtils.getChildren(child)).length) await IOUtils.remove(child, { ignoreAbsent: true }).catch(() => {
+            });
+          } else if (!local.files[name] && name !== "content/assets/space/custom.jpg") {
+            await IOUtils.remove(child, { ignoreAbsent: true });
+            removed++;
+            bytes += info.size || 0;
+          }
+        }
+      };
+      await walk(content, "content", 0);
+      try {
+        Services.prefs.setCharPref("browsery.ui.sweptBuild", String(local.build));
+      } catch {
+      }
+      if (removed) log3?.(`removed ${removed} files Browsery no longer uses (${Math.round(bytes / 1048576)} MB)`);
+      return removed;
+    } catch (error) {
+      log3?.(`file sweep: ${error}`);
+      return 0;
+    }
+  }
   function restartBrowsery() {
     Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
   }
   async function installPendingInterfaceUpdate(log3) {
     try {
-      if (Services.appinfo.OS !== "WINNT") return false;
+      if (Services.appinfo.OS !== "WINNT" && !qaChannel()) return false;
       if (!await IOUtils.exists(PathUtils.join(uiStage(), "ready.json"))) return false;
       return await installStagedUi(log3);
     } catch (error) {
@@ -5274,6 +5366,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       return false;
     }
   }
+  var channel = () => qaChannel() || CHANNEL_HOME;
   function createUpdater({ emit, log: log3, win, geckoVersion, interfaceVersion }) {
     let state = {
       status: "idle",
@@ -5304,13 +5397,13 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
     const canInstall = () => {
       try {
-        return Services.appinfo.OS === "WINNT" && launcher().exists();
+        return Boolean(qaChannel()) || Services.appinfo.OS === "WINNT" && launcher().exists();
       } catch {
         return false;
       }
     };
     async function readManifest() {
-      const response = await fetch(`${CHANNEL}latest.json?t=${Date.now()}`, { cache: "no-store" });
+      const response = await fetch(`${channel()}latest.json?t=${Date.now()}`, { cache: "no-store" });
       if (!response.ok) throw new Error(`update channel answered ${response.status}`);
       const manifest = await response.json();
       if (!validManifest(manifest)) throw new Error("update manifest is not valid");
@@ -5369,7 +5462,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       let received = 0;
       let lastPublish = 0;
       for (const part of manifest.parts) {
-        const response = await fetch(`${CHANNEL}${encodeURIComponent(part)}`, { cache: "no-store" });
+        const response = await fetch(`${channel()}${encodeURIComponent(part)}`, { cache: "no-store" });
         if (!response.ok || !response.body) throw new Error(`update download answered ${response.status}`);
         const reader = response.body.getReader();
         let buffered = [];
@@ -5431,12 +5524,14 @@ ${permission}`, { origin, permission, decision: "allow" });
     async function checkUi({ auto }) {
       const local = await readLocalBuild();
       if (!local || !canInstall()) return null;
-      const response = await fetch(`${CHANNEL}ui-latest.json?t=${Date.now()}`, { cache: "no-store" });
+      const response = await fetch(`${channel()}ui-latest.json?t=${Date.now()}`, { cache: "no-store" });
       if (response.status === 404) return null;
       if (!response.ok) throw new Error(`update channel answered ${response.status}`);
       const remote = await response.json();
       if (!validUiManifest(remote)) throw new Error("interface update manifest is not valid");
       if (remote.version !== local.version || remote.build <= local.build) return { upToDate: true };
+      const skip = await IOUtils.readJSON(uiSkip()).catch(() => null);
+      if (skip?.build === remote.build) return { upToDate: true };
       let staged = null;
       try {
         staged = await IOUtils.readJSON(PathUtils.join(uiStage(), "ready.json"));
@@ -5463,7 +5558,7 @@ ${permission}`, { origin, permission, decision: "allow" });
           let lastPublish = 0;
           for (const file of changed) {
             const { sha256: sha2562, size } = remote.files[file];
-            const response = await fetch(`${CHANNEL}ui-${sha2562}`, { cache: "no-store" });
+            const response = await fetch(`${channel()}ui-${sha2562}`, { cache: "no-store" });
             if (!response.ok) throw new Error(`update download answered ${response.status}`);
             const bytes = new Uint8Array(await response.arrayBuffer());
             if (bytes.length !== size || hex(await win.crypto.subtle.digest("SHA-256", bytes)) !== sha2562) throw new Error(`${file} failed its checksum`);
@@ -5631,7 +5726,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // ../browsery-gecko/platform/search-pages.js
+  // browsery-gecko/platform/search-pages.js
   init_globals();
   var import_browsery_search = __toESM(require_browsery_search());
   var SEARCH_ADDRESS = /^browsery:\/\/search\/?(\?[^#]*)?(#.*)?$/i;
@@ -5706,7 +5801,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { rewrite, call };
   }
 
-  // ../browsery-gecko/platform/bridge.js
+  // browsery-gecko/platform/bridge.js
   var lazy3 = {};
   ChromeUtils.defineESModuleGetters(lazy3, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs",
@@ -5786,21 +5881,21 @@ ${permission}`, { origin, permission, decision: "allow" });
   var SURROGATE_URIS = new Map(Object.entries(import_surrogates.SURROGATES).map(([name, body]) => [name, `data:text/javascript;base64,${btoa(unescape(encodeURIComponent(body)))}`]));
   function createBridge(win) {
     const channels = /* @__PURE__ */ new Map();
-    const on = (channel, callback) => {
+    const on = (channel2, callback) => {
       if (typeof callback !== "function") return () => {
       };
-      if (!channels.has(channel)) channels.set(channel, /* @__PURE__ */ new Set());
-      channels.get(channel).add(callback);
-      return () => channels.get(channel)?.delete(callback);
+      if (!channels.has(channel2)) channels.set(channel2, /* @__PURE__ */ new Set());
+      channels.get(channel2).add(callback);
+      return () => channels.get(channel2)?.delete(callback);
     };
-    const emit = (channel, payload) => {
+    const emit = (channel2, payload) => {
       let delivered = 0;
-      for (const callback of channels.get(channel) || []) {
+      for (const callback of channels.get(channel2) || []) {
         try {
           callback(payload);
           delivered++;
         } catch (error) {
-          log(`${channel} listener failed: ${error}`);
+          log(`${channel2} listener failed: ${error}`);
         }
       }
       return delivered;
@@ -5911,22 +6006,22 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
     const networkObserver = {
       observe(subject) {
-        let channel;
+        let channel2;
         try {
-          channel = subject.QueryInterface(Ci.nsIHttpChannel);
+          channel2 = subject.QueryInterface(Ci.nsIHttpChannel);
         } catch {
           return;
         }
-        const info = channel.loadInfo;
+        const info = channel2.loadInfo;
         if (!info) return;
         const type = TYPE_MAP.get(info.externalContentPolicyType) || "other";
-        const url = channel.URI.spec;
+        const url = channel2.URI.spec;
         if (type === "mainFrame") {
-          if (channel.requestMethod === "GET" && trackerBlockingOn()) {
+          if (channel2.requestMethod === "GET" && trackerBlockingOn()) {
             const cleaned = (0, import_link_cleaner.stripTrackingParams)(url);
             if (cleaned) {
               try {
-                channel.redirectTo(Services.io.newURI(cleaned));
+                channel2.redirectTo(Services.io.newURI(cleaned));
               } catch {
               }
             }
@@ -5951,15 +6046,15 @@ ${permission}`, { origin, permission, decision: "allow" });
           const stub = blocked.surrogate && SURROGATE_URIS.get(blocked.surrogate);
           if (stub) {
             try {
-              channel.redirectTo(Services.io.newURI(stub));
+              channel2.redirectTo(Services.io.newURI(stub));
               return;
             } catch {
             }
           }
-          channel.cancel(Cr.NS_ERROR_ABORT);
+          channel2.cancel(Cr.NS_ERROR_ABORT);
           return;
         }
-        if (type === "ping" && trackerBlockingOn() && initiator && siteOf(hostOf(url)) !== siteOf(hostOf(initiator))) channel.cancel(Cr.NS_ERROR_ABORT);
+        if (type === "ping" && trackerBlockingOn() && initiator && siteOf(hostOf(url)) !== siteOf(hostOf(initiator))) channel2.cancel(Cr.NS_ERROR_ABORT);
       }
     };
     const contextFor = (partition) => partition === "private" ? privateContextId : 0;
@@ -6647,7 +6742,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { desktop, init, emit, on, flush, prefs: () => prefs, accounts: () => localAccount, protection: () => adblocker };
   }
 
-  // ../browsery-gecko/platform/chrome-helpers.js
+  // browsery-gecko/platform/chrome-helpers.js
   init_globals();
   function installChromeHelpers(win, { emit, log: log3, aiMenu = true, extraItems = null }) {
     const doc = win.document;
@@ -7050,7 +7145,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     }, { capture: true, passive: true });
   }
 
-  // ../browsery-gecko/platform/storage.js
+  // browsery-gecko/platform/storage.js
   init_globals();
   init_fs();
   var MemoryStorage = class {
@@ -7110,7 +7205,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return local;
   }
 
-  // ../browsery-gecko/platform/diagnostics.js
+  // browsery-gecko/platform/diagnostics.js
   init_globals();
   var MAX_LOG_BYTES = 768 * 1024;
   function probeDir() {
@@ -7259,7 +7354,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     win.setInterval(report, 1e3);
   }
 
-  // platform/google.js
+  // browsery-v2/platform/google.js
   init_globals();
   var SESSION_COOKIES = /* @__PURE__ */ new Set(["SID", "__Secure-1PSID", "__Secure-3PSID", "SAPISID", "__Secure-1PAPISID"]);
   var GOOGLE_DOMAINS = ["google.com", "youtube.com", "gmail.com", "googleusercontent.com", "google.co.uk", "google.de"];
@@ -7354,7 +7449,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/tools.js
+  // browsery-v2/platform/tools.js
   init_globals();
   var import_credentials2 = __toESM(require_credentials());
   var import_ai_overview2 = __toESM(require_ai_overview());
@@ -8075,7 +8170,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/extensions.js
+  // browsery-v2/platform/extensions.js
   init_globals();
   var AMO = "https://addons.mozilla.org/api/v5/addons";
   var AUDIT_KEY = "browsery:extensions-audit";
@@ -8489,7 +8584,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/notifications.js
+  // browsery-v2/platform/notifications.js
   init_globals();
   function installPopupNotifications(win, { emit, on, log: log3 }) {
     const active = /* @__PURE__ */ new Map();
@@ -8574,7 +8669,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/family.js
+  // browsery-v2/platform/family.js
   init_globals();
   function hostMatches(host, rule) {
     const h = String(host || "").toLowerCase().replace(/^www\./, "");
@@ -8609,27 +8704,27 @@ ${permission}`, { origin, permission, decision: "allow" });
     const observer = {
       observe(subject, topic) {
         if (topic !== "http-on-modify-request" || !rules.enabled) return;
-        let channel;
+        let channel2;
         try {
-          channel = subject.QueryInterface(Ci.nsIHttpChannel);
+          channel2 = subject.QueryInterface(Ci.nsIHttpChannel);
         } catch {
           return;
         }
-        const uri = channel.URI;
+        const uri = channel2.URI;
         const host = uri.host;
-        const info = channel.loadInfo;
+        const info = channel2.loadInfo;
         const top = info?.externalContentPolicyType === Ci.nsIContentPolicy.TYPE_DOCUMENT;
         if (!info || info.loadingPrincipal?.isSystemPrincipal && !top) return;
         const why = verdict(host);
         if (why && (top || info.externalContentPolicyType === Ci.nsIContentPolicy.TYPE_SUBDOCUMENT)) {
-          channel.cancel(Cr.NS_ERROR_BLOCKED_BY_POLICY);
+          channel2.cancel(Cr.NS_ERROR_BLOCKED_BY_POLICY);
           if (top) emit("family:blocked", { host, why });
           return;
         }
         if (!rules.safeSearch) return;
         if (YOUTUBE.test(host)) {
           try {
-            channel.setRequestHeader("YouTube-Restrict", "Strict", false);
+            channel2.setRequestHeader("YouTube-Restrict", "Strict", false);
           } catch {
           }
           return;
@@ -8641,7 +8736,7 @@ ${permission}`, { origin, permission, decision: "allow" });
           if (url.searchParams.get(engine.param[0]) === engine.param[1]) return;
           url.searchParams.set(engine.param[0], engine.param[1]);
           try {
-            channel.redirectTo(Services.io.newURI(url.href));
+            channel2.redirectTo(Services.io.newURI(url.href));
           } catch (error) {
             log3(`safe search: ${error}`);
           }
@@ -8683,7 +8778,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/apps.js
+  // browsery-v2/platform/apps.js
   init_globals();
   var APPS_KEY = "browsery:apps";
   function createApps(win, { log: log3 }) {
@@ -8869,7 +8964,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/privacy.js
+  // browsery-v2/platform/privacy.js
   init_globals();
   var COMPANIES = [
     ["Google", /(^|\.)(google-analytics|googletagmanager|googlesyndication|googleadservices|doubleclick|2mdn|googletagservices|gstatic|google)\.(com|net)$/],
@@ -8987,10 +9082,10 @@ ${permission}`, { origin, permission, decision: "allow" });
     const pps = Cc["@mozilla.org/network/protocol-proxy-service;1"].getService(Ci.nsIProtocolProxyService);
     const filter = {
       QueryInterface: ChromeUtils.generateQI(["nsIProtocolProxyChannelFilter"]),
-      applyFilter(channel, proxyInfo, callback) {
+      applyFilter(channel2, proxyInfo, callback) {
         let id = 0;
         try {
-          id = channel.loadInfo?.originAttributes?.userContextId || 0;
+          id = channel2.loadInfo?.originAttributes?.userContextId || 0;
         } catch {
         }
         const route = routes.get(id);
@@ -9132,7 +9227,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/downloadsx.js
+  // browsery-v2/platform/downloadsx.js
   init_globals();
   var lazy6 = {};
   ChromeUtils.defineESModuleGetters(lazy6, {
@@ -9174,20 +9269,20 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/shield.js
+  // browsery-v2/platform/shield.js
   init_globals();
 
-  // platform/shield-engine.js
+  // browsery-v2/platform/shield-engine.js
   init_globals();
 
-  // platform/shield-signatures.js
+  // browsery-v2/platform/shield-signatures.js
   init_globals();
   var SIGNATURES = {
     // the EICAR antivirus test file (harmless; every scanner is expected to flag it)
     "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f": "EICAR-Test-File (not a virus)"
   };
 
-  // platform/shield-engine.js
+  // browsery-v2/platform/shield-engine.js
   var RISKY_EXT = /\.(exe|msi|msix|appx|bat|cmd|com|scr|pif|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|lnk|reg|jar|dll|cpl|iso|img|vhd|vhdx|docm|xlsm|pptm|one|url|scf|chm)$/i;
   var PROGRAM_EXT = /\.(exe|scr|com|pif|dll|cpl|msi|sys)$/i;
   var SCRIPT_EXT = /\.(bat|cmd|ps1|psm1|vbs|vbe|js|jse|wsf|wsh|hta|reg|url|scf|sh)$/i;
@@ -9413,7 +9508,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     return { verdict, score, threat, findings };
   }
 
-  // platform/shield.js
+  // browsery-v2/platform/shield.js
   var lazy7 = {};
   ChromeUtils.defineESModuleGetters(lazy7, {
     Downloads: "resource://gre/modules/Downloads.sys.mjs"
@@ -9619,7 +9714,7 @@ ${permission}`, { origin, permission, decision: "allow" });
     };
   }
 
-  // platform/selftest.js
+  // browsery-v2/platform/selftest.js
   init_globals();
   function selfTestDir() {
     try {
@@ -10029,7 +10124,112 @@ ${error?.stack || ""}`);
     }
   }
 
-  // platform/index.js
+  // browsery-v2/platform/pip.js
+  init_globals();
+  var ACTORS = {
+    PictureInPictureLauncher: {
+      parent: { esModuleURI: "resource://gre/modules/PictureInPicture.sys.mjs" },
+      child: { esModuleURI: "resource://gre/actors/PictureInPictureChild.sys.mjs", events: { MozTogglePictureInPicture: { capture: true } } },
+      messageManagerGroups: ["browsers"],
+      allFrames: true
+    },
+    PictureInPicture: {
+      parent: { esModuleURI: "resource://gre/modules/PictureInPicture.sys.mjs" },
+      child: { esModuleURI: "resource://gre/actors/PictureInPictureChild.sys.mjs" },
+      messageManagerGroups: ["browsers", "pip-player"],
+      allFrames: true
+    },
+    PictureInPictureToggle: {
+      parent: { esModuleURI: "resource://gre/modules/PictureInPicture.sys.mjs" },
+      child: { esModuleURI: "resource://gre/actors/PictureInPictureChild.sys.mjs", events: { UAWidgetSetupOrChange: {}, contextmenu: { capture: true } } },
+      messageManagerGroups: ["browsers"],
+      allFrames: true
+    }
+  };
+  function visibleBrowser(win) {
+    let best = null;
+    let bestArea = 0;
+    for (const view of win.document.querySelectorAll("webview")) {
+      const rect = view.getBoundingClientRect();
+      const area = rect.width * rect.height;
+      if (area > bestArea && view.checkVisibility?.() !== false) {
+        best = view;
+        bestArea = area;
+      }
+    }
+    return best?.__browsery?.browser || null;
+  }
+  function installPictureInPicture(win, { log: log3 }) {
+    try {
+      const prefs = Services.prefs;
+      prefs.setBoolPref("media.videocontrols.picture-in-picture.enabled", true);
+      prefs.setBoolPref("media.videocontrols.picture-in-picture.video-toggle.enabled", true);
+      prefs.setBoolPref("media.videocontrols.picture-in-picture.urlbar-button.enabled", false);
+      for (const [name, options] of Object.entries(ACTORS)) {
+        try {
+          ChromeUtils.registerWindowActor(name, options);
+        } catch (error) {
+          if (!/already registered/i.test(String(error))) log3(`pip actor ${name}: ${error}`);
+        }
+      }
+      const { PictureInPicture } = ChromeUtils.importESModule("resource://gre/modules/PictureInPicture.sys.mjs");
+      if (!PictureInPicture.__browsery) {
+        PictureInPicture.__browsery = true;
+        PictureInPicture.setUrlbarPipIconActive = () => {
+        };
+        PictureInPicture.setUrlbarPipIconInactive = () => {
+        };
+        PictureInPicture.updateUrlbarToggle = () => {
+        };
+      }
+      const tabs = /* @__PURE__ */ new WeakMap();
+      const tabContainer = win.document.createElement("div");
+      const tabFor = (browser) => {
+        if (!browser) return null;
+        let tab = tabs.get(browser);
+        if (!tab) {
+          tab = win.document.createElement("div");
+          Object.defineProperty(tab, "documentGlobal", { value: win });
+          Object.defineProperty(tab, "linkedBrowser", { value: browser });
+          tabs.set(browser, tab);
+        }
+        return tab;
+      };
+      if (!win.gBrowser) {
+        Object.defineProperty(win, "gBrowser", {
+          configurable: true,
+          value: {
+            get selectedBrowser() {
+              return visibleBrowser(win);
+            },
+            getTabForBrowser: (browser) => browser?.ownerDocument === win.document ? tabFor(browser) : null,
+            tabContainer,
+            get selectedTab() {
+              return tabFor(visibleBrowser(win));
+            },
+            set selectedTab(tab) {
+              try {
+                win.focus();
+                if (tab?.linkedBrowser) win.dispatchEvent(new win.CustomEvent("browsery-show-browser", { detail: { browser: tab.linkedBrowser } }));
+              } catch {
+              }
+            }
+          }
+        });
+      }
+    } catch (error) {
+      log3(`picture-in-picture unavailable: ${error}`);
+    }
+  }
+  function togglePictureInPicture(id) {
+    const browser = webviewById(id)?.browser;
+    const actor = browser?.browsingContext?.currentWindowGlobal?.getActor("PictureInPictureLauncher");
+    if (!actor) return { ok: false };
+    actor.sendAsyncMessage("PictureInPicture:KeyToggle");
+    return { ok: true };
+  }
+
+  // browsery-v2/platform/index.js
   globalThis.BROWSERY_GECKO_VERSION = "2.1.0";
   globalThis.BROWSERY_INTERFACE_VERSION = "2.1.0";
   window.__browseryProbeControls = { omnibox: ".v2-urlbar input", newTab: ".v2-newtab-button", settings: ".v2-settings-button" };
@@ -10044,7 +10244,7 @@ ${error?.stack || ""}`);
         parent: { esModuleURI: "resource://browsery/actors/BrowseryPageParent.sys.mjs" },
         child: {
           esModuleURI: "resource://browsery/actors/BrowseryPageChild.sys.mjs",
-          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {} }
+          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {}, load: { capture: true } }
         },
         allFrames: true,
         messageManagerGroups: ["browsers"]
@@ -10062,6 +10262,7 @@ ${error?.stack || ""}`);
   }
   async function start() {
     const win = window;
+    if (win.__browseryGuardRestart) return;
     let appUrl = "";
     try {
       appUrl = new URLSearchParams(win.location.search).get("app") || "";
@@ -10080,6 +10281,28 @@ ${error?.stack || ""}`);
       return;
     }
     diagnostics.open(Services.dirsvc.get("ProfD", Ci.nsIFile).path);
+    const marker = PathUtils.join(Services.dirsvc.get("ProfD", Ci.nsIFile).path, "browsery", "running.json");
+    let lastExitUnclean = false;
+    if (!appUrl) {
+      try {
+        const was = await IOUtils.readJSON(marker);
+        lastExitUnclean = Boolean(was?.at);
+        if (lastExitUnclean) log2(`the last session (started ${new Date(was.at).toISOString()}, build ${was.build}) did not close properly`);
+      } catch {
+      }
+      try {
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611131536 });
+      } catch {
+      }
+      win.addEventListener("unload", () => {
+        try {
+          const file = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsIFile);
+          file.initWithPath(marker);
+          if (file.exists()) file.remove(false);
+        } catch {
+        }
+      });
+    }
     log2(`starting Browsery ${"2.1.0"} (engine ${Services.appinfo.version})`);
     if (!appUrl && await installPendingInterfaceUpdate(log2)) {
       const message = document.getElementById("boot-message");
@@ -10186,6 +10409,16 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
+      build: 202611131536,
+      // The interface calls this once it is on screen: an update that just went in is
+      // kept (shell/guard.js would otherwise put the previous files back), and files
+      // no build lists any more are cleared out a little later.
+      interfaceReady: async () => {
+        if (appUrl) return { ok: true };
+        await confirmInterfaceUpdate(log2);
+        win.setTimeout(() => sweepStaleFiles(log2), 25e3);
+        return { ok: true };
+      },
       googleStatus: () => google.status(),
       googleRefresh: () => google.refresh(),
       googleDisconnect: () => google.disconnect(),
@@ -10212,6 +10445,84 @@ ${error?.stack || ""}`);
         } catch {
         }
       },
+      // A problem report the person can read and send themselves: versions, graphics,
+      // and the end of Browsery's own log. Nothing is sent anywhere by Browsery.
+      lastExitUnclean: () => lastExitUnclean,
+      problemReport: async () => {
+        await diagnostics.flush?.();
+        const profile = Services.dirsvc.get("ProfD", Ci.nsIFile).path;
+        let text = "";
+        try {
+          text = await IOUtils.readUTF8(PathUtils.join(profile, "browsery", "logs", "browsery.log"));
+        } catch {
+        }
+        const lines = text.split("\n").filter(Boolean).slice(-250).map((line) => line.replace(/\b(https?:\/\/[^\s/?#]+)[^\s]*/g, "$1/\u2026"));
+        let renderer = "";
+        try {
+          renderer = JSON.parse(win.localStorage.getItem("v2:device") || "{}").renderer || "";
+        } catch {
+        }
+        return [
+          `Browsery ${"2.1.0"} (build ${202611131536})`,
+          `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
+          `Graphics: ${renderer || "unknown"}`,
+          `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
+          `Report made: ${(/* @__PURE__ */ new Date()).toISOString()}`,
+          "",
+          "--- Browsery log (newest last) ---",
+          ...lines
+        ].join("\n");
+      },
+      // A video in its own window that stays on top (Ctrl Shift ]).
+      pictureInPicture: (id) => togglePictureInPicture(id),
+      // Mouse gestures in pages and darkening light sites (Settings › Appearance).
+      setGestures: (on) => {
+        try {
+          Services.prefs.setBoolPref("browsery.content.gestures", Boolean(on));
+          Services.prefs.setBoolPref("ui.context_menus.after_mouseup", true);
+        } catch {
+        }
+      },
+      setForceDark: (on) => {
+        try {
+          Services.prefs.setBoolPref("browsery.content.forceDark", Boolean(on));
+        } catch {
+        }
+        for (const view of win.document.querySelectorAll("webview")) {
+          try {
+            view.__browsery?.browser?.browsingContext?.currentWindowGlobal?.getActor("BrowseryPage")?.sendQuery("Browsery:Darken", { on: null }).catch(() => {
+            });
+          } catch {
+          }
+        }
+      },
+      // This site only: dark on or off, remembered for the site.
+      toggleDarkSite: async (id) => {
+        const browser = webviewById(id)?.browser;
+        const actor = browser?.browsingContext?.currentWindowGlobal?.getActor("BrowseryPage");
+        let host = "";
+        try {
+          host = browser.currentURI.host.replace(/^www\./, "");
+        } catch {
+        }
+        if (!actor || !host) return { ok: false };
+        const state = await actor.sendQuery("Browsery:Darken", { on: null }).catch(() => null);
+        const next = !state?.darkened;
+        const edit = (name, add) => {
+          let list = [];
+          try {
+            list = Services.prefs.getStringPref(name, "").split(",").filter(Boolean);
+          } catch {
+          }
+          list = list.filter((item) => item !== host);
+          if (add) list.push(host);
+          Services.prefs.setStringPref(name, list.slice(-500).join(","));
+        };
+        edit("browsery.content.darkOn", next);
+        edit("browsery.content.darkOff", !next);
+        const after = await actor.sendQuery("Browsery:Darken", { on: next }).catch(() => null);
+        return { ok: true, dark: Boolean(after?.darkened), host };
+      },
       ...tools,
       ...extensions,
       ...notices,
@@ -10236,6 +10547,7 @@ ${error?.stack || ""}`);
     Object.defineProperty(win, "browseryDesktop", { value: desktop, configurable: false, enumerable: true, writable: false });
     await bridge.init();
     installStorage(win);
+    installPictureInPicture(win, { log: log2 });
     if (!appUrl) google.start();
     win.browseryOpenTab = appUrl ? (url) => desktop.openInMainWindow(url) : (url) => bridge.emit("browser:new-tab", String(url));
     const pending2 = Array.isArray(win.__browseryPendingUrls) ? win.__browseryPendingUrls.splice(0) : [];
@@ -10248,6 +10560,7 @@ ${error?.stack || ""}`);
       }
     }
     const script = document.createElement("script");
+    script.type = "module";
     script.src = "app/main.js";
     script.addEventListener("load", () => {
       log2("interface loaded");

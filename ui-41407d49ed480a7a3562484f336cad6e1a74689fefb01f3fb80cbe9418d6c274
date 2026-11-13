@@ -45,6 +45,13 @@ export class BrowseryPageParent extends JSWindowActorParent {
         browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent(name, { detail: { url, ...point }, bubbles: true }));
         return undefined;
       }
+      case 'Browsery:Gesture': {
+        if (!browser?.ownerDocument || this.browsingContext?.parent) return undefined;
+        const dir = String(message.data?.dir || '');
+        if (!['left', 'right', 'up', 'down'].includes(dir)) return undefined;
+        browser.dispatchEvent(new browser.ownerDocument.defaultView.CustomEvent('browsery-gesture', { detail: { dir }, bubbles: true }));
+        return undefined;
+      }
       case 'Browsery:SearchCall':
         if (!internal || !this.isBrowseryPage()) throw new Error('Not a Browsery page.');
         return internal.searchCall(String(message.data?.path || ''), String(message.data?.search || ''));

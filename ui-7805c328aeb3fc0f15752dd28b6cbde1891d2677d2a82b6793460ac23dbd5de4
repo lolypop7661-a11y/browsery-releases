@@ -1,0 +1,62 @@
+// Browsery interface-update guard.
+//
+// Loaded by shell.html before platform.js, and kept small and self-contained on
+// purpose: it is the one piece that still runs when an interface update turns out
+// to be broken. The updater (platform/updater.js) keeps the files it replaced in
+// update/ui-backup with a counter. Every start bumps the counter; the interface
+// clears the backup once it is on screen. Two starts in a row that never got that
+// far put the previous files back, note the bad build so it is not fetched again,
+// and restart.
+(function () {
+  try {
+    if (/[?&]app=/.test(location.search)) return; // site-as-app windows are not a start
+    const engine = Services.dirsvc.get('GreD', Ci.nsIFile);
+    const inDir = (base, ...names) => { const file = base.clone(); for (const name of names) file.append(name); return file; };
+    const update = inDir(engine.parent, 'update');
+    const backup = inDir(update, 'ui-backup');
+    const meta = inDir(backup, 'backup.json');
+    if (!meta.exists()) return;
+    const writeText = (file, text) => {
+      const out = Cc['@mozilla.org/network/file-output-stream;1'].createInstance(Ci.nsIFileOutputStream);
+      out.init(file, 0x02 | 0x08 | 0x20, 0o644, 0);
+      const conv = Cc['@mozilla.org/intl/converter-output-stream;1'].createInstance(Ci.nsIConverterOutputStream);
+      conv.init(out, 'UTF-8');
+      conv.writeString(text);
+      conv.close();
+    };
+    const info = JSON.parse(Cu.readUTF8File(meta));
+    const starts = (Number(info.starts) || 0) + 1;
+    if (starts <= 2) { writeText(meta, JSON.stringify({ ...info, starts })); return; }
+
+    // Put the previous interface back.
+    const ui = inDir(engine, 'browsery');
+    const safe = name => typeof name === 'string' && /^[A-Za-z0-9_@+-][A-Za-z0-9_.@+/-]*$/.test(name) && !name.split('/').includes('..');
+    for (const name of (info.files || []).filter(safe)) {
+      const parts = name.split('/');
+      const from = inDir(backup, 'files', ...parts);
+      if (!from.exists()) continue;
+      const to = inDir(ui, ...parts);
+      if (to.exists()) to.remove(false);
+      if (!to.parent.exists()) to.parent.create(Ci.nsIFile.DIRECTORY_TYPE, 0o755);
+      from.copyTo(to.parent, to.leafName);
+    }
+    for (const name of (info.added || []).filter(safe)) {
+      const gone = inDir(ui, ...name.split('/'));
+      if (gone.exists()) gone.remove(false);
+    }
+    const oldList = inDir(backup, 'build.json');
+    if (oldList.exists()) {
+      const list = inDir(ui, 'build.json');
+      if (list.exists()) list.remove(false);
+      oldList.copyTo(ui, 'build.json');
+    }
+    writeText(inDir(update, 'ui-skip.json'), JSON.stringify({ build: Number(info.toBuild) || 0, at: Date.now() }));
+    backup.remove(true);
+    try { Services.appinfo.invalidateCachesOnRestart(); } catch (error) {}
+    window.__browseryGuardRestart = true;
+    dump('[Browsery] interface update ' + info.toBuild + ' did not start; the previous interface is back\n');
+    Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart);
+  } catch (error) {
+    try { dump('[Browsery] update guard: ' + error + '\n'); } catch (ignored) {}
+  }
+})();

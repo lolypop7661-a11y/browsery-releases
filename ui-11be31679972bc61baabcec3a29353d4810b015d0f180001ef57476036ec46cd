@@ -20,6 +20,12 @@ function adblockOn(host) {
   } catch { return false; }
 }
 
+// Darken every site: the page is inverted and turned round the colour wheel, which keeps
+// hues and turns white to near-black; pictures, video and canvases are turned back.
+const DARK_CSS = `html { filter: invert(1) hue-rotate(180deg) brightness(.94) contrast(.94) !important; background: #fff !important; }
+img, video, picture, canvas, iframe, embed, object, svg image, [style*="background-image"], :fullscreen { filter: invert(1) hue-rotate(180deg) !important; }
+picture img { filter: none !important; }`;
+
 export class BrowseryPageChild extends JSWindowActorChild {
   constructor() {
     super();
@@ -116,7 +122,77 @@ export class BrowseryPageChild extends JSWindowActorChild {
     }, true);
   }
 
+  // ----- Darken every site (Settings › Appearance › Websites) -----
+  // Pages that are light get turned dark with a filter; pictures and video are turned
+  // back so they keep their colours. Sites with their own dark look (or that are dark
+  // already) are left alone. Per site: browsery.content.darkOn / darkOff (host lists).
+  darkWanted() {
+    const win = this.contentWindow;
+    let host = '';
+    try { if (!/^https?:$/.test(win.location.protocol)) return false; host = win.location.hostname.replace(/^www\./, ''); } catch { return false; }
+    const list = name => { try { return Services.prefs.getStringPref(name, '').split(',').map(item => item.trim()).filter(Boolean); } catch { return []; } };
+    if (list('browsery.content.darkOff').includes(host)) return false;
+    if (list('browsery.content.darkOn').includes(host)) return true;
+    try { return Services.prefs.getBoolPref('browsery.content.forceDark', false); } catch { return false; }
+  }
+
+  pageIsLight() {
+    const win = this.contentWindow;
+    const doc = this.document;
+    const rgb = node => { try { const m = String(win.getComputedStyle(node).backgroundColor).match(/[\d.]+/g); return m && (m.length < 4 || Number(m[3]) > 0.1) ? m.slice(0, 3).map(Number) : null; } catch { return null; } };
+    const colour = (doc.body && rgb(doc.body)) || rgb(doc.documentElement) || [255, 255, 255];
+    const light = (0.2126 * colour[0] + 0.7152 * colour[1] + 0.0722 * colour[2]) / 255;
+    return light > 0.55;
+  }
+
+  darken(force) {
+    if (this.browsingContext.parent) return;
+    const win = this.contentWindow;
+    if (!win?.windowUtils) return;
+    const want = force ?? this.darkWanted();
+    const uri = `data:text/css;charset=utf-8,${encodeURIComponent(DARK_CSS)}`;
+    if (this.darkened && !want) { try { win.windowUtils.removeSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET); } catch {} this.darkened = false; }
+    if (!this.darkened && want && (force || this.pageIsLight())) { try { win.windowUtils.loadSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET); this.darkened = true; } catch {} }
+  }
+
+  // ----- Mouse gestures: hold the right button and draw a stroke -----
+  // ← back, → forward, ↑ new tab, ↓ reload. Off unless browsery.content.gestures is on.
+  watchGestures() {
+    if (this.gestureWatch || this.browsingContext.parent) return;
+    try { if (!Services.prefs.getBoolPref('browsery.content.gestures', false)) return; } catch { return; }
+    const doc = this.document;
+    if (!doc) return;
+    this.gestureWatch = true;
+    let start = null;
+    let swallow = false;
+    doc.addEventListener('mousedown', event => { if (event.button === 2) { start = { x: event.screenX, y: event.screenY }; swallow = false; } }, true);
+    doc.addEventListener('mouseup', event => {
+      if (event.button !== 2 || !start) return;
+      const dx = event.screenX - start.x;
+      const dy = event.screenY - start.y;
+      start = null;
+      if (Math.hypot(dx, dy) < 48) return;
+      const dir = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 'left' : 'right') : (dy < 0 ? 'up' : 'down');
+      swallow = true;
+      this.sendAsyncMessage('Browsery:Gesture', { dir });
+    }, true);
+    doc.addEventListener('contextmenu', event => { if (swallow) { swallow = false; event.preventDefault(); event.stopPropagation(); } }, true);
+  }
+
+  // ----- A video in its own small window -----
+  // The playing (or largest) video on the page; its picture is sent to the window
+  // frame by frame by the Browsery window (see platform/tools.js popOutVideo).
+  findVideo() {
+    const doc = this.document;
+    const videos = [...doc.querySelectorAll('video')].filter(video => video.readyState > 1 || video.currentSrc);
+    if (!videos.length) return null;
+    const area = video => { const r = video.getBoundingClientRect(); return r.width * r.height; };
+    return videos.find(video => !video.paused) || videos.sort((a, b) => area(b) - area(a))[0];
+  }
+
   handleEvent(event) {
+    if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.darken(); this.watchGestures(); }
+    if (event.type === 'load') this.darken();
     if (event.type === 'DOMWindowCreated') { this.exposeBrowseryPage(); if (this.webOnlyGoogle()) return; this.protect(); this.skinGoogle(); }
     else if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.protect(); this.skinGoogle(); this.recolorGoogle(); this.stripGoogle(); this.reportLoaded(); this.watchLogins(); this.watchLinks(); }
     else if (event.type === 'pageshow' && event.persisted) this.reportLoaded();
@@ -206,6 +282,26 @@ export class BrowseryPageChild extends JSWindowActorChild {
         win.windowUtils.loadSheetUsingURIString(uri, Ci.nsIDOMWindowUtils.AUTHOR_SHEET);
         this.sheets.set(key, uri);
         return key;
+      }
+      case 'Browsery:Darken': {
+        // { on: true | false } from the page menu; null re-reads the settings.
+        const on = message.data?.on;
+        this.darken(on === null || on === undefined ? undefined : Boolean(on));
+        return { darkened: Boolean(this.darkened), light: this.pageIsLight() };
+      }
+      case 'Browsery:VideoInfo': {
+        const video = this.findVideo();
+        if (!video) return null;
+        const r = video.getBoundingClientRect();
+        return { width: video.videoWidth || Math.round(r.width), height: video.videoHeight || Math.round(r.height), paused: video.paused, time: video.currentTime, duration: Number.isFinite(video.duration) ? video.duration : 0, rect: [r.left, r.top, r.width, r.height] };
+      }
+      case 'Browsery:VideoControl': {
+        const video = this.findVideo();
+        if (!video) return null;
+        const what = String(message.data?.what || '');
+        if (what === 'toggle') { if (video.paused) video.play().catch(() => {}); else video.pause(); }
+        else if (what === 'seek') video.currentTime = Math.max(0, video.currentTime + (Number(message.data?.by) || 0));
+        return { paused: video.paused };
       }
       case 'Browsery:RemoveCSS': {
         const uri = this.sheets.get(String(message.data.key));
