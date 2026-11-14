@@ -5477,7 +5477,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!await IOUtils.exists(backup)) return false;
       const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
       const local = await readLocalBuild();
-      if (info && local && true && 202611132219 !== local.build) return false;
+      if (info && local && true && 202611140728 !== local.build) return false;
       await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
       log3?.(`interface update ${info?.toBuild || ""} confirmed`);
       return true;
@@ -11078,7 +11078,7 @@ ${error?.stack || ""}`);
       } catch {
       }
       try {
-        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611132219 });
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611140728 });
       } catch {
       }
       win.addEventListener("unload", () => {
@@ -11216,7 +11216,7 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
-      build: 202611132219,
+      build: 202611140728,
       // The interface calls this once it is on screen: an update that just went in is
       // kept (shell/guard.js would otherwise put the previous files back), and files
       // no build lists any more are cleared out a little later.
@@ -11270,7 +11270,7 @@ ${error?.stack || ""}`);
         } catch {
         }
         return [
-          `Browsery ${"2.1.0"} (build ${202611132219})`,
+          `Browsery ${"2.1.0"} (build ${202611140728})`,
           `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
           `Graphics: ${renderer || "unknown"}`,
           `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
