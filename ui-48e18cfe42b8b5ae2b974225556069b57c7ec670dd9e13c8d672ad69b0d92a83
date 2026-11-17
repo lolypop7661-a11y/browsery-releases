@@ -468,7 +468,10 @@ export class BrowseryPageChild extends JSWindowActorChild {
   typoKey(event) {
     const last = this.lastTypo;
     if (!last || Date.now() - last.when > 15000 || !(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey || String(event.key).toLowerCase() !== 'z') return;
-    setTimeout(() => this.typoUndone(), 0);
+    // Editors with their own undo (Slate, Lexical…) put the word back a little later, after
+    // their own render, so look again a few times until it shows.
+    const done = last;
+    for (const wait of [0, 25, 60, 120, 250, 400]) setTimeout(() => { if (this.lastTypo === done) this.typoUndone(); }, wait);
   }
 
   typoUndone() {
