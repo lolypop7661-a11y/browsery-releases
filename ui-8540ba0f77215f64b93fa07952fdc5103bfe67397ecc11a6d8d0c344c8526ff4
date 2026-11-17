@@ -5477,7 +5477,7 @@ ${permission}`, { origin, permission, decision: "allow" });
       if (!await IOUtils.exists(backup)) return false;
       const info = await IOUtils.readJSON(PathUtils.join(backup, "backup.json")).catch(() => null);
       const local = await readLocalBuild();
-      if (info && local && true && 202611171729 !== local.build) return false;
+      if (info && local && true && 202611171840 !== local.build) return false;
       await IOUtils.remove(backup, { recursive: true, ignoreAbsent: true });
       log3?.(`interface update ${info?.toBuild || ""} confirmed`);
       return true;
@@ -11031,7 +11031,7 @@ ${error?.stack || ""}`);
         parent: { esModuleURI: "resource://browsery/actors/BrowseryPageParent.sys.mjs" },
         child: {
           esModuleURI: "resource://browsery/actors/BrowseryPageChild.sys.mjs",
-          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {}, load: { capture: true }, MozInvalidForm: {} }
+          events: { DOMWindowCreated: {}, DOMContentLoaded: {}, pageshow: {}, load: { capture: true }, MozInvalidForm: {}, input: { capture: true }, keydown: { capture: true } }
         },
         allFrames: true,
         messageManagerGroups: ["browsers"]
@@ -11078,7 +11078,7 @@ ${error?.stack || ""}`);
       } catch {
       }
       try {
-        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611171729 });
+        await IOUtils.writeJSON(marker, { at: Date.now(), build: 202611171840 });
       } catch {
       }
       win.addEventListener("unload", () => {
@@ -11216,7 +11216,7 @@ ${error?.stack || ""}`);
       ...bridge.desktop,
       product: "Browsery",
       version: "2.1.0",
-      build: 202611171729,
+      build: 202611171840,
       // The interface calls this once it is on screen: an update that just went in is
       // kept (shell/guard.js would otherwise put the previous files back), and files
       // no build lists any more are cleared out a little later.
@@ -11270,7 +11270,7 @@ ${error?.stack || ""}`);
         } catch {
         }
         return [
-          `Browsery ${"2.1.0"} (build ${202611171729})`,
+          `Browsery ${"2.1.0"} (build ${202611171840})`,
           `Engine: Gecko ${Services.appinfo.platformVersion} on ${Services.appinfo.OS} ${Services.sysinfo.getProperty("version") || ""} ${Services.appinfo.XPCOMABI || ""}`.trim(),
           `Graphics: ${renderer || "unknown"}`,
           `Last session closed properly: ${lastExitUnclean ? "no" : "yes"}`,
@@ -11295,6 +11295,13 @@ ${error?.stack || ""}`);
       hiddenOnSites: () => hiddenRules(),
       showHiddenAgain: (host, selector) => showAgain(host, selector),
       // Mouse gestures in pages and darkening light sites (Settings › Appearance).
+      // Typing slips put right in web pages (Settings › General); the page actor reads the preference.
+      setAutocorrect: (on) => {
+        try {
+          Services.prefs.setBoolPref("browsery.content.autocorrect", Boolean(on));
+        } catch {
+        }
+      },
       setGestures: (on) => {
         try {
           Services.prefs.setBoolPref("browsery.content.gestures", Boolean(on));

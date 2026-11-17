@@ -5,7 +5,11 @@
 //  - Page tools for the interface: executeJavaScript, insertCSS, title/icons.
 import { GENERIC_HIDE, YOUTUBE_HIDE, PRELUDE, ANTI_DETECTION, YOUTUBE } from 'resource://browsery/actors/content-rules.sys.mjs';
 import { GOOGLE_SKIN, GOOGLE_RECOLOR, GOOGLE_STRIP, isGoogleSearch, webOnlyUrl } from 'resource://browsery/actors/google-skin.sys.mjs';
+import { fixWord } from 'resource://browsery/actors/typos.sys.mjs';
+import { setTimeout } from 'resource://gre/modules/Timer.sys.mjs';
 
+// Sites whose text boxes did not follow a typing fix (see fixTypoNow); left alone from then on.
+const HANDS_OFF = new Set();
 const YT_HOST = /(?:^|\.)youtube(?:-nocookie)?\.com$/;
 const VIRTUAL_MARK = '#browsery-virtual=';
 // JS built-ins inside a sandbox are the sandbox's own; page patches must use
@@ -361,7 +365,173 @@ export class BrowseryPageChild extends JSWindowActorChild {
     } catch {}
   }
 
+  // Typing slips put right as you type (Settings › General › Fix typos as you type): "teh "
+  // becomes "the " when the word is finished with a space or a mark. Only words on the short
+  // list in typos.sys.mjs, only in ordinary text boxes and message boxes (typoField says
+  // which). The change goes through the page's own editing, so the page is told and Ctrl Z
+  // puts back what was typed; a word put back that way is not touched again on this page.
+  //
+  // Chat and mail sites keep their own copy of the text, apart from the screen, and send
+  // their copy. Three rules keep the two in step (qa/test_typos.py types into the real
+  // editors to hold them): the change is made a moment after the key, not during it; the
+  // word and the mark after it are typed over in one go; and a site that still does not
+  // follow is left alone from then on.
+  fixTypo(event) {
+    try {
+      this.typoStep = (this.typoStep || 0) + 1;
+      if (event.isComposing || this.typosOff) return;
+      // the box itself, also when it sits inside a web component
+      const field = event.composedTarget || event.target;
+      if (event.inputType === 'historyUndo') { this.typoUndone(); return; }
+      if (event.inputType !== 'insertText' || typeof event.data !== 'string' || !/^[\s.,!?;:)]$/.test(event.data)) return;
+      if (!Services.prefs.getBoolPref('browsery.content.autocorrect', true)) return;
+      if (!field?.ownerDocument?.defaultView || !this.typoField(field)) return;
+      if (HANDS_OFF.has(field.ownerDocument.location.host)) { this.typosOff = true; return; }
+      // Not in the middle of the keystroke: a site that keeps its own copy of the text (chat
+      // and mail editors do) is part-way through taking the key in at this point, and a
+      // change now can leave its copy and the screen disagreeing. A moment later it has
+      // settled. If more has been typed by then, the word is left as it is.
+      const step = this.typoStep;
+      const mark = event.data;
+      setTimeout(() => { if (step === this.typoStep) this.fixTypoNow(field, mark); }, 0);
+    } catch {}
+  }
+
+  fixTypoNow(field, mark) {
+    try {
+      if (!field.isConnected || this.typosOff) return;
+      const doc = field.ownerDocument;
+      const win = doc.defaultView;
+      const plain = field.localName === 'input' || field.localName === 'textarea';
+      let node = null; let end = 0; let text = '';
+      if (plain) {
+        end = field.selectionStart;
+        if (end == null || end !== field.selectionEnd) return;
+        text = field.value;
+      } else {
+        const selection = win.getSelection();
+        if (!selection?.isCollapsed) return;
+        node = selection.anchorNode;
+        if (!node || node.nodeType !== 3 || !field.contains(node)) return;
+        end = selection.anchorOffset;
+        text = node.data;
+      }
+      // the caret has to be where the mark was just typed
+      const typed = text[end - 1];
+      if (typed !== mark && !(mark === ' ' && typed === '\u00a0')) return;
+      // the word that was just finished: everything between the last gap and the mark typed
+      const found = text.slice(Math.max(0, end - 40), end - 1).match(/(?:^|[\s("\u00a0])([A-Za-z][A-Za-z']{2,23})$/);
+      if (!found || end < 4) return;
+      const word = found[1];
+      const fixed = fixWord(word);
+      if (!fixed || this.typosKept?.has(word.toLowerCase())) return;
+      const from = end - 1 - word.length;
+      if (text.slice(from, end - 1) !== word) return;
+      // where the word is in the whole box, to check afterwards that the site followed
+      const whole = () => (plain ? field.value : field.textContent).replace(/\u00a0/g, ' ');
+      let at = from;
+      if (!plain) { const lead = doc.createRange(); lead.selectNodeContents(field); lead.setEnd(node, from); at = lead.toString().length; }
+      const before = whole();
+      if (before.slice(at, at + word.length) !== word) return;
+      const want = before.slice(0, at) + fixed + before.slice(at + word.length, at + word.length + 1);
+      // The word and the mark after it are typed over in one go, so the caret ends up after
+      // the mark by itself; moving it afterwards is a second change a site could miss.
+      const over = fixed + typed;
+      if (plain) {
+        field.setSelectionRange(from, end);
+        if (!this.typeOver(win, field, over)) { field.setSelectionRange(end, end); return; }
+      } else {
+        const selection = win.getSelection();
+        const range = doc.createRange();
+        range.setStart(node, from);
+        range.setEnd(node, end);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        if (!this.typeOver(win, null, over)) { selection.collapse(node, Math.min(end, node.length)); return; }
+      }
+      const done = { word: word.toLowerCase(), typed: word + (typed === '\u00a0' ? ' ' : typed), at, field, whole, plain, when: Date.now() };
+      this.lastTypo = done;
+      // A site that did not follow the change puts the old word back or shows both, at once
+      // or within a moment. Its text boxes are then left alone, on this page and on its others.
+      const off = () => { this.typosOff = true; this.lastTypo = null; HANDS_OFF.add(doc.location.host); };
+      if (!whole().startsWith(want)) { off(); return; }
+      setTimeout(() => {
+        try { if (this.lastTypo === done && field.isConnected && !fixed.startsWith(word) && whole().slice(at, at + word.length) === word) off(); } catch {}
+      }, 150);
+    } catch {}
+  }
+
+  // Ctrl Z, in a box where a word was just put right. The engine's own undo says so
+  // (historyUndo); editors with their own undo only show it in the text, so the key is
+  // watched as well. A word put back this way is kept as typed from then on, and the caret
+  // goes back after it (undoing leaves the word selected, where the next key would replace it).
+  typoKey(event) {
+    const last = this.lastTypo;
+    if (!last || Date.now() - last.when > 15000 || !(event.ctrlKey || event.metaKey) || event.altKey || event.shiftKey || String(event.key).toLowerCase() !== 'z') return;
+    setTimeout(() => this.typoUndone(), 0);
+  }
+
+  typoUndone() {
+    try {
+      const last = this.lastTypo;
+      if (!last || Date.now() - last.when > 15000 || !last.field.isConnected) return;
+      if (last.whole().slice(last.at, last.at + last.typed.length) !== last.typed) return;
+      (this.typosKept ||= new Set()).add(last.word);
+      this.lastTypo = null;
+      const field = last.field;
+      if (last.plain) {
+        if (field.selectionStart !== field.selectionEnd) field.setSelectionRange(field.selectionEnd, field.selectionEnd);
+      } else {
+        const selection = field.ownerDocument.defaultView.getSelection();
+        if (selection && !selection.isCollapsed && field.contains(selection.anchorNode) && selection.toString().replace(/\u00a0/g, ' ') === last.typed) selection.collapseToEnd();
+      }
+    } catch {}
+  }
+
+  // Replaces the selected text the way typing would, through the engine's own editor: the
+  // page is told (input events), and it is one step in the box's undo history.
+  typeOver(win, field, text) {
+    try {
+      const editor = field ? field.editor : win.docShell.editingSession.getEditorForWindow(win);
+      if (editor) { editor.insertText(text); return true; }
+    } catch {}
+    try { return win.document.execCommand('insertText', false, text); } catch { return false; }
+  }
+
+  // Whether a text box is one where typing slips may be put right.
+  typoField(field) {
+    const tag = field.localName;
+    if (tag === 'input') { if (!['', 'text'].includes(String(field.getAttribute('type') || '').toLowerCase())) return false; }
+    else if (tag !== 'textarea' && !field.isContentEditable) return false;
+    if (field.readOnly || field.disabled) return false;
+    // spelling help switched off by the site, on the box or around it (the engine's own default
+    // for one-line boxes is off, so the attribute is what counts, not the property)
+    if (/^false$/i.test(String(field.closest?.('[spellcheck]')?.getAttribute('spellcheck') || ''))) return false;
+    const off = name => /^(off|false|none)$/i.test(String(field.getAttribute(name) || ''));
+    if (off('autocorrect') || off('autocapitalize')) return false;
+    // not prose: sign-in and payment boxes, addresses, numbers, codes; and search boxes, where
+    // names and odd spellings are looked for on purpose and the site has its own "did you mean"
+    const said = names => names.map(name => field.getAttribute(name) || '').join(' ').toLowerCase();
+    if (/user|login|e-?mail|pass|pwd|otp|\bcode\b|token|\bkey\b|url|link|domain|host|numeric|decimal|\btel\b|phone|card|iban|promo|coupon|search|query|\bq\b/.test(said(['autocomplete', 'inputmode', 'name', 'id']))) return false;
+    if (/\b(user ?name|e-?mail|password|passcode|search|otp|verification code|promo code|coupon)\b/.test(said(['aria-label', 'placeholder']))) return false;
+    if (/^(searchbox|combobox|spinbutton)$/i.test(String(field.getAttribute('role') || ''))) return false;
+    // code and terminals
+    if (field.closest?.('.monaco-editor, .CodeMirror, .cm-editor, .ace_editor, .xterm, pre, code, [role="code"], [data-language]')) return false;
+    // a page or a box that says it is not in English: the list is English only
+    const lang = String(field.closest?.('[lang]')?.getAttribute('lang') || field.ownerDocument.documentElement.getAttribute('lang') || '').trim().toLowerCase();
+    if (lang && !/^en\b/.test(lang)) return false;
+    // document editors that draw their own page and have their own autocorrect: what is
+    // typed there goes into a hidden box that only stands in for the keyboard
+    if (/(^|\.)docs\.google\.com$|(^|\.)officeapps\.live\.com$/.test(field.ownerDocument.location.hostname)) return false;
+    const size = field.getBoundingClientRect();
+    if (size.width < 24 || size.height < 10) return false;
+    if (field.ownerDocument.defaultView.getComputedStyle(field).opacity === '0') return false;
+    return true;
+  }
+
   handleEvent(event) {
+    if (event.type === 'input') { this.fixTypo(event); return; }
+    if (event.type === 'keydown') { this.typoKey(event); return; }
     if (event.type === 'MozInvalidForm') { this.reportInvalid(event.detail); return; }
     if (event.type === 'DOMContentLoaded' && event.target === this.document) { this.darken(); this.watchGestures(); }
     if (event.type === 'load') this.darken();

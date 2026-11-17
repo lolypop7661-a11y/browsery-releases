@@ -1,4 +1,4 @@
-"use client";import"./part-chunk-X4I7FV6M.js";import{a as ct,b as Be}from"./part-chunk-E3GP5DAZ.js";import{d as de,e as Ie}from"./part-chunk-CWPIFRHI.js";Ie();var C=de(ct());var me=de(Be()),Z=`#version 300 es
+"use client";import"./part-chunk-X4I7FV6M.js";import{a as ct,b as Be}from"./part-chunk-NX2MJIAE.js";import{d as de,e as Ie}from"./part-chunk-F7S4GFTD.js";Ie();var C=de(ct());var me=de(Be()),Z=`#version 300 es
 in vec2 aPosition;
 void main() {
   gl_Position = vec4(aPosition, 0.0, 1.0);

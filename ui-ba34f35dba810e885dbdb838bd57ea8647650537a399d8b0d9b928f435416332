@@ -1,0 +1,107 @@
+// Common English typing slips and what was meant. Used by the page actor (typos put right
+// as you type in web pages) and by the address bar's helpers (a search with a slip in it).
+//
+// The list is deliberately narrow. A slip is only here if it is not a word in its own
+// right: not in English ("form", "wether", "calender", "cant", "wont", "its", "lets" are
+// left out), and, as far as could be told, not in another language written with the same
+// letters ("dont", "adn", "independant" and "persistant" are French, "im" and "frist" German,
+// "adress" Swedish, "dilema" Spanish). Words
+// with capitals inside them, digits, or all capitals are never touched (fixWord).
+//
+// To add one: "slip:meant", lower case, and check both rules above.
+
+const LIST = `
+teh:the hte:the taht:that thta:that tath:that thsi:this tihs:this htis:this thier:their theri:their tehir:their
+thne:then tehn:then thna:than thnig:thing thign:thing thikn:think thnik:think thougth:thought
+waht:what whta:what wnat:want watn:want wehn:when whne:when wehre:where wheer:where whcih:which wich:which whihc:which
+wiht:with wtih:with wokr:work wrok:work wolrd:world owrld:world worng:wrong wrogn:wrong wirte:write writen:written
+yuo:you yoru:your yuor:your yaer:year yera:year yeras:years youself:yourself
+jsut:just liek:like konw:know knwo:know knwon:known abotu:about aobut:about baout:about agian:again
+alwasy:always alomst:almost alreayd:already amoung:among anythign:anything aroudn:around
+becuase:because beacuse:because becasue:because beofre:before beign:being bewteen:between
+buisness:business bussiness:business coudl:could woudl:would shoudl:should
+diffrent:different differnt:different diffrence:difference doign:doing enought:enough everythign:everything
+exmaple:example experiance:experience familar:familiar finaly:finally gonig:going
+haev:have hvae:have ahve:have hapen:happen happpen:happen happend:happened heigth:height
+importnat:important isntead:instead langauge:language lenght:length strenght:strength litle:little littel:little
+mroe:more msut:must mcuh:much nver:never ohter:other otehr:other onyl:only
+peopel:people poeple:people pepole:people perhpas:perhaps porblem:problem probelm:problem
+probaly:probably probbaly:probably proably:probably raelly:really realyl:really realy:really
+rember:remember remeber:remember remmeber:remember rigth:right siad:said saem:same smae:same
+shcool:school scohol:school soem:some smoe:some somethign:something soemthing:something
+somtimes:sometimes sometiems:sometimes stlil:still sitll:still sturcture:structure
+tiem:time togehter:together togther:together udnerstand:understand understnad:understand usualy:usually
+veyr:very vrey:very tomorow:tomorrow tommorow:tomorrow tommorrow:tomorrow
+recieve:receive recieved:received recieving:receiving reciept:receipt percieve:perceive
+acheive:achieve acheived:achieved beleive:believe belive:believe beleif:belief cheif:chief
+freind:friend freinds:friends wierd:weird foriegn:foreign sieze:seize nieghbor:neighbor neigbor:neighbor
+definately:definitely definitly:definitely definetly:definitely seperate:separate seperately:separately
+occured:occurred occurence:occurrence occurance:occurrence occassion:occasion occasionaly:occasionally
+untill:until goverment:government enviroment:environment accomodate:accommodate acommodate:accommodate
+neccessary:necessary necesary:necessary neccesary:necessary necessery:necessary
+unecessary:unnecessary unneccessary:unnecessary
+begining:beginning beggining:beginning begginer:beginner comming:coming writting:writing writeing:writing
+completly:completely concious:conscious dissapear:disappear disapear:disappear
+dissapoint:disappoint dissapointed:disappointed embarass:embarrass embarrasing:embarrassing
+existance:existence foward:forward futher:further harrass:harass harrassment:harassment
+immediatly:immediately imediately:immediately intresting:interesting
+knowlege:knowledge knowlegde:knowledge liason:liaison libary:library mispell:misspell mispelled:misspelled
+noticable:noticeable posession:possession posess:possess prefered:preferred
+publically:publicly publicaly:publicly recomend:recommend reccomend:recommend refered:referred
+relevent:relevant relavent:relevant religous:religious resturant:restaurant restarant:restaurant restaraunt:restaurant
+rythm:rhythm sucessful:successful succesful:successful succesfully:successfully sucessfully:successfully
+sucess:success suceed:succeed supress:suppress suprise:surprise tendancy:tendency tounge:tongue
+truely:truly trully:truly truley:truly unforseen:unforeseen unfortunatly:unfortunately whereever:wherever
+accross:across apparant:apparent appearence:appearance arguement:argument
+basicly:basically beatiful:beautiful beautifull:beautiful bizzare:bizarre catagory:category cemetary:cemetery
+changable:changeable commitee:committee concensus:consensus desparate:desperate
+ecstacy:ecstasy equiptment:equipment exagerate:exaggerate excelent:excellent exellent:excellent
+explaination:explanation facinating:fascinating febuary:February firey:fiery flourescent:fluorescent
+fourty:forty garantee:guarantee guage:gauge gaurd:guard gratefull:grateful greatful:grateful
+happyness:happiness heirarchy:hierarchy hygeine:hygiene incidently:incidentally indispensible:indispensable
+inteligence:intelligence interupt:interrupt irresistable:irresistible lisence:license
+maintainance:maintenance maintenence:maintenance managment:management 
+ninty:ninety nineth:ninth offical:official oppurtunity:opportunity oportunity:opportunity orignal:original
+parrallel:parallel parliment:parliament particulary:particularly pasttime:pastime
+permanant:permanent politican:politician potatos:potatoes tomatos:tomatoes preceed:precede
+priviledge:privilege privelege:privilege pronounciation:pronunciation quarentine:quarantine
+questionaire:questionnaire reconize:recognize refrence:reference repitition:repetition rediculous:ridiculous
+saftey:safety scedule:schedule shedule:schedule sentance:sentence similiar:similar simmilar:similar
+sincerly:sincerely speach:speech transfered:transferred twelth:twelfth usefull:useful
+vaccum:vacuum vacume:vacuum vegtable:vegetable vegatable:vegetable vehical:vehicle
+wensday:Wednesday wendsday:Wednesday wellcome:welcome withold:withhold yatch:yacht
+`;
+// Two words run together, and contractions typed without their apostrophe.
+const PHRASES = `
+alot:a lot aswell:as well atleast:at least infact:in fact eachother:each other
+youre:you're theyre:they're doesnt:doesn't didnt:didn't isnt:isn't wasnt:wasn't
+couldnt:couldn't shouldnt:shouldn't wouldnt:wouldn't havent:haven't hasnt:hasn't arent:aren't werent:weren't
+thats:that's whats:what's dosen't:doesn't
+`;
+
+export const TYPOS = new Map();
+for (const pair of LIST.split(/\s+/)) { const at = pair.indexOf(':'); if (at > 0) TYPOS.set(pair.slice(0, at), pair.slice(at + 1)); }
+for (const line of PHRASES.split('\n')) for (const pair of line.trim().split(/\s+(?=[a-z']+:)/)) { const at = pair.indexOf(':'); if (at > 0) TYPOS.set(pair.slice(0, at), pair.slice(at + 1)); }
+
+// The word put right, or null when there is nothing to do. Only plain lower-case words, or
+// ones with just their first letter a capital, are looked at (so NASA, iPhone and h2o are
+// left alone); a capital first letter is kept.
+export function fixWord(word) {
+  const text = String(word || '');
+  if (text.length < 3 || text.length > 24 || !/^[A-Za-z][a-z']*$/.test(text)) return null;
+  const fixed = TYPOS.get(text.toLowerCase());
+  if (!fixed) return null;
+  return /^[A-Z]/.test(text) && /^[a-z]/.test(fixed) ? fixed[0].toUpperCase() + fixed.slice(1) : fixed;
+}
+
+// A line of text (a search) with its slips put right, or null when it has none.
+export function fixText(text) {
+  let changed = false;
+  const out = String(text || '').replace(/[A-Za-z][A-Za-z']*/g, word => {
+    const fixed = fixWord(word);
+    if (!fixed) return word;
+    changed = true;
+    return fixed;
+  });
+  return changed ? out : null;
+}
